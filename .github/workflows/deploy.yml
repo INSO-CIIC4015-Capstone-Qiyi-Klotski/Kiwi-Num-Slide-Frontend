@@ -1,0 +1,126 @@
+name: Deploy FE (Docker/ECR) to Elastic Beanstalk
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION:     ${{ secrets.AWS_REGION }}
+      EB_APP_NAME:    ${{ secrets.EB_APP_NAME }}
+      EB_ENV_NAME:    ${{ secrets.EB_ENV_NAME }}
+      EB_S3_BUCKET:   ${{ secrets.EB_S3_BUCKET }}
+      ECR_REPO_URI:   ${{ secrets.ECR_REPO_URI }}    # p.ej. 9162....amazonaws.com/next-min
+      IMAGE_TAG:      ${{ github.sha }}
+      CONTAINER_PORT: 8080
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Credenciales AWS
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+
+      # Validaciones rápidas de secrets
+      - name: Validate required secrets
+        run: |
+          [ -n "$ECR_REPO_URI" ] || { echo "::error::ECR_REPO_URI vacío"; exit 1; }
+          # quitar slash final si lo hubiera
+          ECR_URI="${ECR_REPO_URI%/}"
+          case "$ECR_URI" in
+            *:*) echo "::error::ECR_REPO_URI no debe incluir :tag (solo repo)"; exit 1;;
+          esac
+          echo "ECR_URI=$ECR_URI" >> $GITHUB_ENV
+
+      # Login a ECR
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Build & push de la imagen (el Dockerfile ya hace build/export con Node 18)
+      - name: Build Docker image
+        run: |
+          IMAGE="$ECR_URI:$IMAGE_TAG"
+          echo "IMAGE=$IMAGE"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          docker build -t "$IMAGE" .
+
+      - name: Push Docker image
+        run: docker push "$IMAGE"
+
+      # Generar Dockerrun (EB hará docker pull de la imagen recién subida)
+      - name: Create Dockerrun.aws.json
+        run: |
+          cat > Dockerrun.aws.json <<EOF
+          {
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "${ECR_URI}:${IMAGE_TAG}",
+              "Update": "true"
+            },
+            "Ports": [
+              { "ContainerPort": 80 }
+            ]
+          }
+          EOF
+          echo "=== Dockerrun.aws.json ==="
+          cat Dockerrun.aws.json
+          
+      # Empaquetar y subir a S3 como application version
+      - name: Zip source bundle
+        run: zip -9r "app-${IMAGE_TAG}.zip" Dockerrun.aws.json
+
+      - name: Upload bundle to S3
+        run: aws s3 cp "app-${IMAGE_TAG}.zip" "s3://${EB_S3_BUCKET}/${EB_APP_NAME}/app-${IMAGE_TAG}.zip"
+
+      - name: Create EB application version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name "${EB_APP_NAME}" \
+            --version-label "${IMAGE_TAG}" \
+            --source-bundle S3Bucket="${EB_S3_BUCKET}",S3Key="${EB_APP_NAME}/app-${IMAGE_TAG}.zip"
+
+      - name: Update EB environment
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name "${EB_ENV_NAME}" \
+            --version-label "${IMAGE_TAG}"
+
+      - name: Monitor EB Events
+        shell: bash
+        run: |
+          echo "Esperando a que el ambiente alcance estado Ready + (Green/Ok)..."
+          end=$((SECONDS+1800))  # 30 min
+
+          while [ $SECONDS -lt $end ]; do
+            # Muestra sólo los mensajes de eventos recientes (opcional; quita si prefieres tabla)
+            aws elasticbeanstalk describe-events \
+              --environment-name "$EB_ENV_NAME" \
+              --region "$AWS_REGION" \
+              --max-items 5 \
+              --output table
+
+            read -r ENV_STATUS HEALTH HEALTH_STATUS VERSION <<<"$(aws elasticbeanstalk describe-environments \
+              --environment-names "$EB_ENV_NAME" \
+              --region "$AWS_REGION" \
+              --query 'Environments[0].[Status,Health,HealthStatus,VersionLabel]' \
+              --output text)"
+
+            echo "Estado actual: Status=$ENV_STATUS | Health=$HEALTH | HealthStatus=$HEALTH_STATUS"
+
+            if [[ "$ENV_STATUS" == "Ready" && ( "$HEALTH" == "Green" || "$HEALTH_STATUS" == "Ok" ) ]]; then
+              echo "✅ Ambiente listo: Ready + ${HEALTH}/${HEALTH_STATUS}"
+              exit 0
+            fi
+
+            sleep 30
+          done
+
+          echo "⏰ Timeout esperando Ready + (Green/Ok)"
+          exit 1

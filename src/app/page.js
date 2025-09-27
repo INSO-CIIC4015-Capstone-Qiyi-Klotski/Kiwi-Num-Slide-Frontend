@@ -1,7 +1,33 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import styles from "./page.module.css";
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"; // <— config en .env.local
+
 export default function Home() {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  async function pingApi() {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const r = await fetch(`${API_BASE}/db-ping`, { cache: "no-store" });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      setResult(data);
+    } catch (e) {
+      setError(e.message || "Request failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -39,6 +65,53 @@ export default function Home() {
             <strong> AWS Elastic Beanstalk</strong> mediante
             <strong> GitHub Actions</strong>.
           </p>
+        </div>
+
+        {/* 🔗 Probar API */}
+        <div
+          style={{
+            marginTop: 24,
+            padding: 16,
+            borderRadius: 12,
+            border: "1px solid #333",
+            maxWidth: 680,
+            width: "100%",
+          }}
+        >
+          <h3 style={{ marginTop: 0 }}>Probar conexión con el backend</h3>
+          <p style={{ margin: "8px 0" }}>
+            Endpoint: <code>{API_BASE}/db-ping</code>
+          </p>
+          <button
+            onClick={pingApi}
+            disabled={loading}
+            style={{
+              padding: "10px 14px",
+              borderRadius: 10,
+              border: "1px solid #444",
+              background: "#111",
+              cursor: "pointer",
+            }}
+          >
+            {loading ? "Llamando..." : "Ping DB"}
+          </button>
+
+          <pre
+            style={{
+              marginTop: 12,
+              padding: 12,
+              borderRadius: 8,
+              background: "#0b0b0b",
+              border: "1px solid #222",
+              overflowX: "auto",
+            }}
+          >
+            {error
+              ? `Error: ${error}`
+              : result
+              ? JSON.stringify(result, null, 2)
+              : "Sin datos aún"}
+          </pre>
         </div>
 
         <div className={styles.ctas}>

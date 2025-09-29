@@ -1,10 +1,15 @@
 # ---- Build (Node 18) ----
 FROM node:18-alpine AS build
 WORKDIR /app
+
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 COPY package.json package-lock.json* ./
 RUN npm ci
 COPY . .
-RUN npm run build   # esto crea /app/out gracias a output:'export'
+
+RUN NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" npm run build
 
 # ---- Runtime (Nginx) ----
 FROM nginx:alpine

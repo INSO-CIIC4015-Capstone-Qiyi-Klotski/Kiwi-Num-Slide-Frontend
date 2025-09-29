@@ -49,9 +49,7 @@ jobs:
           IMAGE="$ECR_URI:$IMAGE_TAG"
           echo "IMAGE=$IMAGE"
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-          docker build \
-            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
-            -t "$IMAGE" .
+          docker build --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} -t "$IMAGE" .
 
       - name: Push Docker image
         run: docker push "$IMAGE"

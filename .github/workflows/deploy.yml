@@ -16,6 +16,7 @@ jobs:
       ECR_REPO_URI:   ${{ secrets.ECR_REPO_URI }}    # p.ej. 9162....amazonaws.com/next-min
       IMAGE_TAG:      ${{ github.sha }}
       CONTAINER_PORT: 80
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
     steps:
       - uses: actions/checkout@v4
@@ -49,7 +50,7 @@ jobs:
           IMAGE="$ECR_URI:$IMAGE_TAG"
           echo "IMAGE=$IMAGE"
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-          docker build --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} -t "$IMAGE" .
+          docker build -t "$IMAGE" --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" .
 
       - name: Push Docker image
         run: docker push "$IMAGE"

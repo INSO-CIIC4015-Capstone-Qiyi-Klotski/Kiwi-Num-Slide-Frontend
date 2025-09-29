@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import styles from "./page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL //This is a comment to generate a commit to change the value of the variable from GitHub Actions.
+const API_BASE = process.env.NEXT_PUBLIC_API_URL 
 
 export default function Home() {
   const [loading, setLoading] = useState(false);

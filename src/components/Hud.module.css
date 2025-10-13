@@ -1,0 +1,30 @@
+.hud {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .iconBtn {
+    background: none;
+    border: 0;
+    font-size: 26px;
+    cursor: pointer;
+    color: #111;
+  }
+  .face { font-size: 22px; opacity: .85; }
+  
+  /* FAB Back abajo-izquierda */
+  .backFab {
+    position: fixed;
+    left: 14px; bottom: 14px;
+    width: 48px; height: 48px;
+    border-radius: 999px;
+    background: #111; color: #fff;
+    display: grid; place-items: center;
+    font-size: 22px; text-decoration: none;
+    box-shadow: 0 8px 16px rgba(0,0,0,.15);
+    transition: transform .1s ease;
+  }
+  .backFab:hover { transform: translateY(-1px); }
+  .backFab:active { transform: translateY(1px); }
+  

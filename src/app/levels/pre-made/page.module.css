@@ -1,0 +1,27 @@
+
+.wrapper {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    padding: 18px 14px 56px;
+    position: relative;
+    background:
+      repeating-linear-gradient(0deg,  #e9d5ff 0 2px, transparent 2px 68px),
+      repeating-linear-gradient(90deg, #e9d5ff 0 2px, transparent 2px 68px);
+  }
+  .wrapper::before {
+    content: "";
+    position: absolute;
+    top: 56px; left: 0; right: 0;
+    height: 3px; background: #111;
+  }
+  .stack {
+    margin-top: 28px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  @media (max-width: 560px) {
+    .wrapper::before { top: 50px; }
+  }
+  

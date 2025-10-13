@@ -1,99 +1,37 @@
-import Image from "next/image";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
+    <section className={styles.wrapper}>
+      {/* HUD superior */}
+      <div className={styles.hud}>
+        <button className={styles.iconBtn} aria-label="settings">⚙️</button>
+        <div className={styles.face}>ฅ^•ﻌ•^ฅ</div>
+        <button className={styles.iconBtn} aria-label="profile">
+          {/* círculo usuario simple */}
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="2" fill="none"/>
+          </svg>
+        </button>
+      </div>
 
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      <h1 className={`${styles.title} brand`}>Kiwi Num Slide</h1>
 
-        {/* 🟢 Banner de despliegue automático */}
-        <div
-          style={{
-            marginTop: 16,
-            padding: "12px 16px",
-            borderRadius: 12,
-            border: "1px solid #333",
-            background: "rgba(100, 255, 218, 0.06)",
-            lineHeight: 1.5,
-            maxWidth: 680,
-          }}
-        >
-          <p style={{ margin: 0 }}>
-            🚀 <strong>Despliegue automático</strong>: este cambio se hizo desde
-            <strong> GitHub</strong> y se publicó en
-            <strong> AWS Elastic Beanstalk</strong> mediante
-            <strong> GitHub Actions</strong>.
-          </p>
-        </div>
+      <div className={styles.stack}>
+        <Link href="/daily" className={styles.btn}>
+          <span className={styles.dashesTop} />
+          <span className={styles.label}>Daily</span>
+          <span className={styles.dashesBottom} />
+        </Link>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/window.svg" alt="Window icon" width={16} height={16} />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <Link href="/levels/pae2" className={styles.btn}>
+          <span className={styles.dashesTop} />
+          <span className={styles.label}>Level Select</span>
+          <span className={styles.dashesBottom} />
+        </Link>
+      </div>
+    </section>
   );
 }

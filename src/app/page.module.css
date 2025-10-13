@@ -165,3 +165,93 @@ a.secondary {
     filter: invert();
   }
 }
+/* FONDO cuadriculado + línea superior */
+.wrapper {
+  min-height: calc(100svh - 0px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 18px 14px 56px;
+  position: relative;
+  background:
+    repeating-linear-gradient(0deg, #e9d5ff 0 2px, transparent 2px 68px),
+    repeating-linear-gradient(90deg, #e9d5ff 0 2px, transparent 2px 68px);
+}
+.wrapper::before {
+  content: "";
+  position: absolute;
+  top: 56px;
+  left: 0; right: 0;
+  height: 3px;
+  background: #111;
+}
+
+/* HUD (engranes / cara / usuario) */
+.hud {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.iconBtn {
+  background: none;
+  border: 0;
+  font-size: 26px;
+  cursor: pointer;
+  color: #111;
+}
+.face { font-size: 22px; opacity: .8; }
+
+/* TÍTULO */
+.title {
+  margin: 10px 0 6px;
+  text-align: center;
+  font-family: var(--font-kiwi), system-ui, sans-serif; /* usa Bungee */
+  font-weight: 800;
+  font-size: clamp(42px, 8vw, 96px);
+  line-height: 1;
+  color: #111;
+  text-shadow: 0 3px 0 #fff;
+}
+
+/* BOTONES apilados */
+.stack { display: flex; flex-direction: column; gap: 18px; }
+
+.btn {
+  position: relative;
+  width: min(560px, 92vw);
+  padding: 20px 28px;
+  background: #fff;
+  border: 6px solid #111;
+  border-radius: 18px;
+  text-decoration: none;
+  color: #111;
+  font-size: clamp(22px, 3.2vw, 38px);
+  font-weight: 800;
+  font-style: italic;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 12px 0 #f59ac7; /* sombra rosada */
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.btn:hover { transform: translateY(1px); box-shadow: 0 10px 0 #f59ac7; }
+.btn:active { transform: translateY(3px); box-shadow: 0 7px 0 #f59ac7; }
+
+/* “Guiones” decorativos */
+.dashesTop, .dashesBottom {
+  pointer-events: none;
+  position: absolute;
+  left: 8%; right: 8%;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, #111 0 34px, transparent 34px 56px);
+  border-radius: 4px;
+}
+.dashesTop { top: -10px; }
+.dashesBottom { bottom: -10px; }
+
+.label { position: relative; z-index: 1; }
+
+@media (max-width: 560px) {
+  .wrapper::before { top: 50px; }
+  .title { font-size: clamp(38px, 10vw, 72px); }
+}

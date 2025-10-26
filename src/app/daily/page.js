@@ -9,7 +9,7 @@ export default function DailyPage() {
   return (
     <section className={styles.wrapper}>
       <Hud showBack backHref='/' />
-      <h1 className='brand' style={{ textAlign: 'center', marginTop: 8 }}>Daily</h1>
+      <h1 className={styles.title}>Daily</h1>
       <Board />
     </section>
   );

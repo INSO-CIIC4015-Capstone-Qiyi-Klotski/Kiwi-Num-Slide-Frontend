@@ -1,0 +1,64 @@
+/* src/components/BackButton.module.css */
+.backButton {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #fff;
+    border: 3px solid #111;
+    border-radius: 12px;
+    color: #111;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 0 #111;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    cursor: pointer;
+    z-index: 10;
+  }
+  
+  .backButton:hover {
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 #111;
+  }
+  
+  .backButton:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #111;
+  }
+  
+  .backButton svg {
+    flex-shrink: 0;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .backButton {
+      top: 12px;
+      left: 12px;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    
+    .backButton svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .backButton {
+      top: 10px;
+      left: 10px;
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    
+    .backButton svg {
+      width: 16px;
+      height: 16px;
+    }
+  }

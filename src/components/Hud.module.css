@@ -10,6 +10,7 @@
     font-size: 26px;
     cursor: pointer;
     color: #111;
+    text-decoration: none;
   }
   .face { font-size: 22px; opacity: .85; }
   

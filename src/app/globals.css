@@ -21,32 +21,130 @@
      LAYOUT COMPONENTS
      ======================================== */
   
+.site-header {
+  background: #ec4899;
+  color: #fff;
+  padding: clamp(0.5rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.site-main {
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+.site-footer {
+  background: #e2e8f0;
+  padding: clamp(0.5rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
+  text-align: center;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+/* ========================================
+   RESPONSIVE LAYOUT BREAKPOINTS
+   ======================================== */
+
+/* Desktop Large */
+@media (min-width: 1025px) {
   .site-header {
-    background: #ec4899;
-    color: #fff;
-    padding: clamp(0.5rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-  }
-  
-  .site-main {
-    padding: 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow: auto;
+    padding: 1rem 2rem;
   }
   
   .site-footer {
-    background: #e2e8f0;
-    padding: clamp(0.5rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
-    text-align: center;
-    font-size: clamp(0.8rem, 2vw, 1rem);
-    flex-shrink: 0;
+    padding: 1rem 2rem;
+    font-size: 1rem;
   }
+}
+
+/* Tablet/Small Desktop Landscape */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: landscape) {
+  .site-header {
+    padding: 0.6rem 1.2rem;
+  }
+  
+  .site-footer {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablet Portrait */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: portrait) {
+  .site-header {
+    padding: 0.8rem 1.5rem;
+  }
+  
+  .site-footer {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small Tablet Landscape */
+@media (max-width: 768px) and (min-width: 481px) and (orientation: landscape) {
+  .site-header {
+    padding: 0.5rem 1rem;
+  }
+  
+  .site-footer {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Small Tablet Portrait */
+@media (max-width: 768px) and (min-width: 481px) and (orientation: portrait) {
+  .site-header {
+    padding: 0.7rem 1.2rem;
+  }
+  
+  .site-footer {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Mobile Landscape */
+@media (max-width: 480px) and (orientation: landscape) {
+  .site-header {
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .site-footer {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+  
+  body {
+    min-height: 100vh;
+  }
+  
+  .site-main {
+    overflow-y: auto;
+  }
+}
+
+/* Mobile Portrait */
+@media (max-width: 480px) and (orientation: portrait) {
+  .site-header {
+    padding: 0.6rem 1rem;
+  }
+  
+  .site-footer {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+}
   
   /* ========================================
      ACCESSIBILITY

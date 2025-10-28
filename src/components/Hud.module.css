@@ -4,6 +4,7 @@
     align-items: center;
     justify-content: space-between;
   }
+  
   .iconBtn {
     background: none;
     border: 0;
@@ -11,8 +12,75 @@
     cursor: pointer;
     color: #111;
     text-decoration: none;
+    transition: opacity 0.2s ease;
+    padding: 4px;
   }
-  .face { font-size: 22px; opacity: .85; }
+  
+  .iconBtn:hover {
+    opacity: 0.8;
+  }
+  
+  .face { 
+    font-size: 22px; 
+    opacity: .85; 
+  }
+  
+  /* Responsive Hud styles */
+  
+  /* Desktop Large */
+  @media (min-width: 1025px) {
+    .iconBtn {
+      font-size: 26px;
+    }
+  }
+  
+  /* Tablet/Small Desktop Landscape */
+  @media (max-width: 1024px) and (min-width: 769px) and (orientation: landscape) {
+    .iconBtn {
+      font-size: 22px;
+      padding: 3px;
+    }
+  }
+  
+  /* Tablet Portrait */
+  @media (max-width: 1024px) and (min-width: 769px) and (orientation: portrait) {
+    .iconBtn {
+      font-size: 24px;
+      padding: 4px;
+    }
+  }
+  
+  /* Small Tablet Landscape */
+  @media (max-width: 768px) and (min-width: 481px) and (orientation: landscape) {
+    .iconBtn {
+      font-size: 20px;
+      padding: 2px;
+    }
+  }
+  
+  /* Small Tablet Portrait */
+  @media (max-width: 768px) and (min-width: 481px) and (orientation: portrait) {
+    .iconBtn {
+      font-size: 22px;
+      padding: 3px;
+    }
+  }
+  
+  /* Mobile Landscape */
+  @media (max-width: 480px) and (orientation: landscape) {
+    .iconBtn {
+      font-size: 18px;
+      padding: 2px;
+    }
+  }
+  
+  /* Mobile Portrait */
+  @media (max-width: 480px) and (orientation: portrait) {
+    .iconBtn {
+      font-size: 20px;
+      padding: 2px;
+    }
+  }
   
   /* FAB Back abajo-izquierda */
   .backFab {

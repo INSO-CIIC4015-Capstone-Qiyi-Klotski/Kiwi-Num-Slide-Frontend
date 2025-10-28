@@ -1,0 +1,599 @@
+.puzzleContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 4px;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.puzzlePageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.unifiedZoomWrapper {
+  display: inline-block;
+  transform-origin: center top;
+  transition: transform 0.3s ease;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1025px) {
+  .unifiedZoomWrapper {
+    transform: scale(1);
+  }
+}
+
+/* Tablet/Small Desktop Landscape */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: landscape) {
+  .puzzleContainer {
+    padding: 3px;
+    gap: 6px;
+  }
+  
+  .puzzlePageContainer {
+    justify-content: center;
+    gap: 6px;
+  }
+  
+  .unifiedZoomWrapper {
+    transform: scale(0.75);
+  }
+}
+
+/* Tablet Portrait */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: portrait) {
+  .puzzleContainer {
+    padding: 4px;
+    gap: 8px;
+  }
+  
+  .puzzlePageContainer {
+    justify-content: flex-start;
+    gap: 8px;
+    padding-top: 2vh;
+  }
+  
+  .unifiedZoomWrapper {
+    transform: scale(0.95);
+  }
+}
+
+/* Small Tablet Landscape */
+@media (max-width: 768px) and (min-width: 481px) and (orientation: landscape) {
+  .puzzleContainer {
+    padding: 2px;
+    gap: 4px;
+  }
+  
+  .puzzlePageContainer {
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .unifiedZoomWrapper {
+    transform: scale(0.7);
+  }
+}
+
+/* Small Tablet Portrait */
+@media (max-width: 768px) and (min-width: 481px) and (orientation: portrait) {
+  .puzzleContainer {
+    padding: 3px;
+    gap: 6px;
+  }
+  
+  .puzzlePageContainer {
+    justify-content: flex-start;
+    gap: 6px;
+    padding-top: 2vh;
+  }
+  
+  .unifiedZoomWrapper {
+    transform: scale(0.85);
+  }
+}
+
+/* Mobile Landscape */
+@media (max-width: 480px) and (orientation: landscape) {
+  .puzzleContainer {
+    padding: 2px;
+    gap: 3px;
+  }
+  
+  .puzzlePageContainer {
+    justify-content: center;
+    gap: 3px;
+  }
+  
+  .unifiedZoomWrapper {
+    transform: scale(0.65);
+  }
+}
+
+/* Mobile Portrait */
+@media (max-width: 480px) and (orientation: portrait) {
+  .puzzleContainer {
+    padding: 3px;
+    gap: 5px;
+  }
+  
+  .puzzlePageContainer {
+    justify-content: flex-start;
+    gap: 5px;
+    padding-top: 3vh;
+  }
+  
+  .unifiedZoomWrapper {
+    transform: scale(0.8);
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+.sizeSelector {
+  display: flex;
+  gap: 8px;
+  background: #f5f5f5;
+  padding: 4px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.sizeButton {
+  padding: 8px 20px;
+  border: 2px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.sizeButton:hover {
+  background: #fff;
+  color: #333;
+}
+
+.sizeButton.active {
+  background: #4CAF50;
+  color: white;
+  border-color: #45a049;
+}
+
+/* Header responsive styles */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: landscape) {
+  .header {
+    gap: 4px;
+    padding: 2px 0;
+  }
+  
+  .sizeSelector {
+    gap: 6px;
+    padding: 3px;
+  }
+  
+  .sizeButton {
+    padding: 6px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 481px) and (orientation: landscape) {
+  .header {
+    gap: 3px;
+    padding: 2px 0;
+  }
+  
+  .sizeSelector {
+    gap: 5px;
+    padding: 2px;
+  }
+  
+  .sizeButton {
+    padding: 5px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
+  .header {
+    gap: 2px;
+    padding: 1px 0;
+  }
+  
+  .sizeSelector {
+    gap: 4px;
+    padding: 2px;
+  }
+  
+  .sizeButton {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .header {
+    gap: 5px;
+    padding: 3px 0;
+  }
+  
+  .sizeSelector {
+    gap: 6px;
+    padding: 3px;
+  }
+  
+  .sizeButton {
+    padding: 7px 18px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+  .header {
+    gap: 4px;
+    padding: 2px 0;
+  }
+  
+  .sizeSelector {
+    gap: 5px;
+    padding: 2px;
+  }
+  
+  .sizeButton {
+    padding: 6px 14px;
+    font-size: 14px;
+  }
+}
+
+.instructions {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.instructions p {
+  margin: 0;
+}
+
+.puzzleGridWrapper {
+  margin: 0 auto;
+  padding: 10px;
+  background: #f8f8f8;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  outline: none;
+  scroll-margin: 100px;
+  transform-origin: center;
+}
+
+.puzzleGridWrapper:focus {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(76, 175, 80, 0.3);
+}
+
+.puzzleGrid {
+  display: grid;
+  gap: 0;
+  background: #fff;
+  border: 3px solid #111;
+  position: relative;
+}
+
+/* Grid size configurations */
+.puzzleGridWrapper[data-size="3"] .puzzleGrid {
+  grid-template-columns: repeat(3, 70px);
+  grid-template-rows: repeat(3, 70px);
+}
+
+.puzzleGridWrapper[data-size="4"] .puzzleGrid {
+  grid-template-columns: repeat(4, 70px);
+  grid-template-rows: repeat(4, 70px);
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  font-size: 26px;
+  font-weight: 800;
+  color: #111;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  position: relative;
+  
+  /* Add grid lines */
+  border-right: 3px solid #111;
+  border-bottom: 3px solid #111;
+}
+
+/* Remove right border on last column */
+.puzzleGridWrapper[data-size="3"] .tile:nth-child(3n) {
+  border-right: none;
+}
+
+.puzzleGridWrapper[data-size="4"] .tile:nth-child(4n) {
+  border-right: none;
+}
+
+/* Remove bottom border on last row */
+.puzzleGridWrapper[data-size="3"] .tile:nth-child(n+7) {
+  border-bottom: none;
+}
+
+.puzzleGridWrapper[data-size="4"] .tile:nth-child(n+13) {
+  border-bottom: none;
+}
+
+.tileNumber {
+  z-index: 1;
+}
+
+.tile:hover {
+  background: #f5f5f5;
+}
+
+.emptyTile {
+  background: #f9f9f9;
+  cursor: default;
+  color: transparent;
+}
+
+.emptyTile:hover {
+  background: #f9f9f9;
+}
+
+.movableTile {
+  background: #fff;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 3px var(--movable-border-color, #4CAF50);
+}
+
+.movableTile:hover {
+  background: #f0f8f0;
+  box-shadow: inset 0 0 0 3px var(--movable-border-color, #4CAF50);
+}
+
+.movableTile:active {
+  background: #e8f5e9;
+  box-shadow: inset 0 0 0 3px var(--movable-border-color, #4CAF50);
+}
+
+.draggingTile {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+/* Horizontal operator - positioned on right border */
+.horizontalOp {
+  position: absolute;
+  right: -1.5px;
+  top: 50%;
+  transform: translate(50%, -50%);
+  background: #fff;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Vertical operator - positioned on bottom border */
+.verticalOp {
+  position: absolute;
+  bottom: -1.5px;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  background: #fff;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.opSymbol {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1;
+}
+
+.puzzleLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transform-origin: center;
+}
+
+.topSection {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transform-origin: center;
+}
+
+.puzzleAndHorizontalGrids {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  transform-origin: center;
+}
+
+.horizontalGridsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  transform-origin: center;
+}
+
+.verticalGridsContainer {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: -10px;
+  transform-origin: center;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: landscape) {
+  .puzzleLayout {
+    gap: 10px;
+  }
+  
+  .topSection {
+    gap: 14px;
+  }
+  
+  .puzzleAndHorizontalGrids {
+    gap: 10px;
+  }
+  
+  .horizontalGridsContainer {
+    gap: 8px;
+  }
+  
+  .verticalGridsContainer {
+    gap: 10px;
+    margin-top: -8px;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 481px) and (orientation: landscape) {
+  .puzzleLayout {
+    gap: 8px;
+  }
+  
+  .topSection {
+    gap: 12px;
+  }
+  
+  .puzzleAndHorizontalGrids {
+    gap: 8px;
+  }
+  
+  .horizontalGridsContainer {
+    gap: 6px;
+  }
+  
+  .verticalGridsContainer {
+    gap: 8px;
+    margin-top: -6px;
+  }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
+  .puzzleLayout {
+    gap: 6px;
+  }
+  
+  .topSection {
+    gap: 10px;
+  }
+  
+  .puzzleAndHorizontalGrids {
+    gap: 6px;
+  }
+  
+  .horizontalGridsContainer {
+    gap: 5px;
+  }
+  
+  .verticalGridsContainer {
+    gap: 6px;
+    margin-top: -4px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .puzzleLayout {
+    gap: 10px;
+  }
+  
+  .topSection {
+    gap: 14px;
+  }
+  
+  .puzzleAndHorizontalGrids {
+    gap: 9px;
+  }
+  
+  .horizontalGridsContainer {
+    gap: 7px;
+  }
+  
+  .verticalGridsContainer {
+    gap: 10px;
+    margin-top: -8px;
+  }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+  .puzzleLayout {
+    gap: 8px;
+  }
+  
+  .topSection {
+    gap: 12px;
+  }
+  
+  .puzzleAndHorizontalGrids {
+    gap: 7px;
+  }
+  
+  .horizontalGridsContainer {
+    gap: 6px;
+  }
+  
+  .verticalGridsContainer {
+    gap: 8px;
+    margin-top: -6px;
+  }
+}

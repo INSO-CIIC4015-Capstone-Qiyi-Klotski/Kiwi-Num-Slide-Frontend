@@ -7,7 +7,7 @@
 
 ### Development (with hot reloading)
 ~~~bash
-docker-compose up
+docker-compose up --build
 ~~~
 
 ### Production

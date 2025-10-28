@@ -1,0 +1,66 @@
+.staticGridContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+ 
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #222;
+    text-align: center;
+  }
+ 
+  .staticGrid {
+    display: flex;
+    gap: 0;
+    background: #fff;
+    border: 3px solid #111;
+  }
+ 
+  /* Vertical orientation (default) */
+  .staticGrid[data-orientation="vertical"] {
+    flex-direction: column;
+  }
+ 
+  /* Horizontal orientation */
+  .staticGrid[data-orientation="horizontal"] {
+    flex-direction: row;
+  }
+ 
+  .staticCell {
+    width: 70px;
+    height: 70px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 800;
+    color: #111;
+    user-select: none;
+    position: relative;
+    border-right: 3px solid #111;
+    border-bottom: 3px solid #111;
+  }
+
+  /* Remove right border on last cell in horizontal grids */
+  .staticGrid[data-orientation="horizontal"] .staticCell:last-child {
+    border-right: none;
+  }
+
+  /* Remove bottom border on last cell in vertical grids */
+  .staticGrid[data-orientation="vertical"] .staticCell:last-child {
+    border-bottom: none;
+  }
+ 
+  .emptyCell {
+    background: #f9f9f9;
+    color: transparent;
+  }
+ 
+  .cellNumber {
+    user-select: none;
+    z-index: 1;
+  }
+  

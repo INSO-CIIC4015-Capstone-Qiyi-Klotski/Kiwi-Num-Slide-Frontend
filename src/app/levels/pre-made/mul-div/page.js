@@ -1,4 +1,19 @@
+import PageLayout from "@/components/layout/PageLayout";
+
 export const metadata = { title: "Mul & Div • Kiwi Num Slide" };
-export default function MulDiv(){
-  return <div style={{padding:24}}>Multiplication & Division (WIP)</div>;
+
+export default function MulDiv() {
+  return (
+    <PageLayout 
+      title="Multiplication & Division" 
+      backHref="/levels/pre-made"
+      titleFontSize="clamp(32px, 8vw, 120px)"
+      titleFontSizeTablet="clamp(28px, 8vw, 60px)"
+      titleFontSizeMobile="clamp(40px, 10vw, 80px)"
+    >
+      <div style={{ padding: 24, textAlign: 'center', fontSize: '18px' }}>
+        Multiplication & Division (WIP)
+      </div>
+    </PageLayout>
+  );
 }

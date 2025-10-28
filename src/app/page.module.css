@@ -18,6 +18,82 @@
     gap: 64px;
     font-family: var(--font-geist-sans);
   }
+
+  /* ========================================
+   PUZZLE PAGE LAYOUT
+   ======================================== */
+
+.page:has(.puzzlePageContainer) {
+  padding: 12px;
+  gap: 8px;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+/* Desktop Large */
+@media (min-width: 1025px) {
+  .page:has(.puzzlePageContainer) {
+    padding: 12px;
+    gap: 8px;
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+/* Tablet/Small Desktop Landscape */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: landscape) {
+  .page:has(.puzzlePageContainer) {
+    padding: 8px;
+    gap: 6px;
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+/* Tablet Portrait */
+@media (max-width: 1024px) and (min-width: 769px) and (orientation: portrait) {
+  .page:has(.puzzlePageContainer) {
+    padding: 10px;
+    gap: 7px;
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+/* Small Tablet Landscape */
+@media (max-width: 768px) and (min-width: 481px) and (orientation: landscape) {
+  .page:has(.puzzlePageContainer) {
+    padding: 6px;
+    gap: 5px;
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+/* Small Tablet Portrait */
+@media (max-width: 768px) and (min-width: 481px) and (orientation: portrait) {
+  .page:has(.puzzlePageContainer) {
+    padding: 10px;
+    gap: 8px;
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+/* Mobile Landscape */
+@media (max-width: 480px) and (orientation: landscape) {
+  .page:has(.puzzlePageContainer) {
+    padding: 6px;
+    gap: 4px;
+    grid-template-rows: auto 1fr auto;
+    overflow-y: auto;
+  }
+}
+
+/* Mobile Portrait */
+@media (max-width: 480px) and (orientation: portrait) {
+  .page:has(.puzzlePageContainer) {
+    padding: 8px;
+    gap: 6px;
+    grid-template-rows: auto 1fr auto;
+  }
+}
   
   @media (prefers-color-scheme: dark) {
     .page {
@@ -182,7 +258,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(20px, 4vw, 32px);
+    gap: clamp(32px, 6vw, 48px);
     max-width: 100%;
     padding: clamp(8px, 2vw, 16px);
   }
@@ -205,12 +281,15 @@
     text-align: center;
     font-family: var(--font-kiwi), system-ui, sans-serif;
     font-weight: 800;
-    font-size: clamp(32px, 8vw, 120px);
+    font-size: var(--title-font-size, clamp(32px, 8vw, 120px));
     line-height: 1;
     color: #111;
     text-shadow: 0 3px 0 #fff;
     margin: 0;
     letter-spacing: 0.1em;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
   
   /* ========================================
@@ -224,6 +303,7 @@
     width: 100%;
     max-width: min(600px, 90vw);
     align-items: center;
+    margin-top: clamp(8px, 2vw, 16px);
   }
   
   .btn {
@@ -287,15 +367,16 @@
   
   @media (max-width: 768px) and (min-width: 481px) {
     .contentContainer {
-      gap: clamp(16px, 3vw, 24px);
+      gap: clamp(24px, 5vw, 36px);
     }
     
     .title { 
-      font-size: clamp(28px, 8vw, 60px); 
+      font-size: var(--title-font-size-tablet, var(--title-font-size, clamp(28px, 8vw, 60px))); 
     }
     
     .stack {
       max-width: min(550px, 85vw);
+      margin-top: clamp(6px, 1.5vw, 12px);
     }
     
     .btn {
@@ -324,7 +405,7 @@
     }
   
     .contentContainer {
-      gap: clamp(16px, 4vw, 24px);
+      gap: clamp(20px, 4vw, 28px);
       padding: clamp(4px, 1vw, 8px);
     }
     
@@ -334,7 +415,7 @@
     }
     
     .title { 
-      font-size: clamp(56px, 14vw, 90px);
+      font-size: var(--title-font-size-mobile, var(--title-font-size-tablet, var(--title-font-size, clamp(56px, 14vw, 90px))));
       width: clamp(70px, 15vw, 110px);
       height: clamp(70px, 15vw, 110px);
       line-height: 0.8;
@@ -348,6 +429,7 @@
     .stack {
       gap: clamp(16px, 4vw, 24px);
       max-width: min(320px, 88vw);
+      margin-top: clamp(4px, 1vw, 8px);
     }
     
     .btn {

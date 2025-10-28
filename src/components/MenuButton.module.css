@@ -1,11 +1,10 @@
 ﻿
 .btn {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-width: clamp(200px, 20vw, 300px);
-  max-width: min(600px, 90vw);
+  width: var(--button-width, 100%);
   min-height: clamp(72px, 8vw, 96px);
   padding: clamp(20px, 4vw, 32px) clamp(24px, 5vw, 40px);
   border: clamp(4px, 1vw, 6px) solid #111;
@@ -34,20 +33,19 @@
   box-shadow: 0 clamp(4px, 1vw, 8px) 0 #111;
 }
 
-/* Responsive behavior for smaller screens */
-@media (max-width: 768px) {
+/* Responsive behavior for tablet */
+@media (max-width: 768px) and (min-width: 481px) {
   .btn {
-    min-width: clamp(150px, 18vw, 250px);
-    max-width: min(550px, 85vw);
+    width: var(--button-width-tablet, var(--button-width, 100%));
     padding: clamp(16px, 3vw, 24px) clamp(20px, 4vw, 28px);
     font-size: clamp(18px, 3.5vw, 28px);
   }
 }
 
+/* Responsive behavior for mobile */
 @media (max-width: 480px) {
   .btn {
-    min-width: clamp(120px, 15vw, 200px);
-    max-width: min(320px, 88vw);
+    width: var(--button-width-mobile, var(--button-width-tablet, var(--button-width, 100%)));
     padding: clamp(12px, 2.5vw, 16px) clamp(16px, 3vw, 20px);
     font-size: clamp(16px, 3vw, 22px);
     min-height: clamp(60px, 6vw, 80px);

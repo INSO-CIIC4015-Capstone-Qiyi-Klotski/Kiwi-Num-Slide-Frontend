@@ -12,7 +12,7 @@ docker-compose up --build
 
 ### Production
 ~~~bash
-docker build -t qk-frontend .
+docker build -t qk-frontend --build-arg NEXT_PUBLIC_API_URL=http://localhost:8000 .
 docker run --rm -p 3000:80 qk-frontend
 ~~~
 

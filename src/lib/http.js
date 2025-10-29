@@ -9,7 +9,7 @@ function getCookie(name) {
 }
 
 function isStateChanging(method = "GET") {
-  const m = method.toUpperCase();
+  const m = (method || "GET").toUpperCase();
   return m !== "GET" && m !== "HEAD" && m !== "OPTIONS";
 }
 
@@ -26,8 +26,8 @@ export async function apiFetch(path, opts = {}) {
   // Headers
   const h = { "Content-Type": "application/json", ...headers };
 
-  // CSRF en mutaciones (doble submit cookie+header)
-  if (csrf && isStateChanging(rest.method)) {
+  // ✅ Enviar CSRF si existe cookie (siempre). Es inofensivo en GET y ayuda a depurar.
+  if (csrf) {
     const token = getCookie("csrf_token");
     if (token) h["X-CSRF-Token"] = token;
   }
@@ -37,10 +37,10 @@ export async function apiFetch(path, opts = {}) {
     ...rest,
     headers: h,
     signal: controller.signal,
-    credentials: "include", // << cookies HttpOnly van y vienen
+    credentials: "include", // cookies HttpOnly van y vienen
   });
 
-  // Si expira el access, intentamos refrescar y reintentar 1 vez
+  // Si expira el access, intentamos refresh y reintentar 1 vez
   if (res.status === 401) {
     const refreshed = await tryCookieRefresh();
     if (refreshed) {
@@ -69,10 +69,15 @@ export async function apiFetch(path, opts = {}) {
 /** Intenta refrescar usando la cookie refresh_token (HttpOnly) */
 async function tryCookieRefresh() {
   try {
+    // ✅ /auth/refresh también requiere CSRF ahora
+    const csrf = getCookie("csrf_token");
     const res = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include", // necesario para que el BE lea la cookie refresh
+      headers: {
+        "Content-Type": "application/json",
+        ...(csrf ? { "X-CSRF-Token": csrf } : {}),
+      },
+      credentials: "include",
     });
     return res.ok;
   } catch {

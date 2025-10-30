@@ -1,11 +1,10 @@
 "use client";
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import styles from './SlidingPuzzle.module.css';
 import { 
   mockPuzzleDataN3, 
   mockPuzzleDataN4
 } from './puzzle-constants';
-import { fetchPuzzleData } from './puzzle-api';
 import { 
   getNumbersGrid, 
   canMove, 
@@ -18,6 +17,7 @@ import { useKeyboardNavigation, useDragAndDrop } from './puzzle-hooks';
 import PuzzleHeader from './PuzzleHeader';
 import PuzzleTile from './PuzzleTile';
 import StaticGrid from './StaticGrid';
+import { fetchPuzzleDataFromBE } from './puzzle-api';
 
 export default function SlidingPuzzle({ initialN = 4 }) {
   const [N, setN] = useState(initialN);
@@ -26,6 +26,27 @@ export default function SlidingPuzzle({ initialN = 4 }) {
   );
   const [draggedTile, setDraggedTile] = useState(null);
   const puzzleRef = useRef(null);
+
+  useEffect(() => {
+  let cancelled = false;
+  (async () => {
+    try {
+      const uiPuzzle = await fetchPuzzleDataFromBE();
+      if (!cancelled) {
+        setN(uiPuzzle.N);
+        setPuzzle(uiPuzzle);
+        
+        // Lee resultados en consola (Chrome → Performance panel también los lista)
+        console.table(performance.getEntriesByType('measure').map(m => ({
+          name: m.name, ms: Math.round(m.duration)
+        })));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  })();
+  return () => { cancelled = true; };
+}, []);
 
   // Handle tile click
   const handleTileClick = useCallback((row, col) => {
@@ -44,9 +65,16 @@ export default function SlidingPuzzle({ initialN = 4 }) {
 
   // Handle puzzle size change
   const handleNChange = async (newN) => {
-    const newPuzzle = await fetchPuzzleData(newN);
-    setN(newN);
-    setPuzzle(newPuzzle);
+    try {
+      const newPuzzle = await fetchPuzzleDataFromBE(newN);
+      setN(newPuzzle.N);
+      setPuzzle(newPuzzle);
+    } catch (e) {
+      console.error("Failed to change size:", e);
+      const fallback = newN === 3 ? mockPuzzleDataN3 : mockPuzzleDataN4;
+      setN(newN);
+      setPuzzle(fallback);
+    }
   };
 
   // Use custom hooks
@@ -54,7 +82,6 @@ export default function SlidingPuzzle({ initialN = 4 }) {
   const dragHandlers = useDragAndDrop(puzzle, setPuzzle, draggedTile, setDraggedTile);
 
   const numbersGrid = getNumbersGrid(puzzle.numbers, N);
-  
   // Calculate current values based on puzzle state
   // Note: horizontal calculations (rows) display on vertical grid (right side)
   //       vertical calculations (columns) display on horizontal grid (below)

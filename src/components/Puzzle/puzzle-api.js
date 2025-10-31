@@ -27,11 +27,28 @@ export async function fetchPuzzleDataFromBE() {
   const daily = await PuzzlesService.getDailyPuzzle();
   performance.mark('daily_fetch_end');
 
+    if (!daily || daily.ok === false) {
+    throw new Error(daily?.error || "Failed to fetch daily puzzle");
+  }
+
   const id = (daily?.data ?? daily)?.puzzle?.id ?? daily?.puzzle?.id;
+
+  if (!id) {
+    throw new Error("Daily puzzle ID is missing");
+  }
 
   performance.mark('detail_fetch_start');
   const detail = await PuzzlesService.get(id);
   performance.mark('detail_fetch_end');
+
+    if (!detail || detail.ok === false) {
+    throw new Error(detail?.error || "Puzzle not found");
+  }
+
+    const boardSpec = (detail?.data ?? detail)?.board_spec;
+  if (!boardSpec) {
+    throw new Error("Puzzle not found");
+  }
 
   // ---- NUEVA SECCIÓN: medir transformación UI ----
   performance.mark('ui_transform_start');

@@ -15,10 +15,11 @@ export default function PreMadeLevels() {
       titleFontSizeTablet="clamp(28px, 8vw, 60px)"
       titleFontSizeMobile="clamp(40px, 10vw, 80px)"
     >
-      <MenuButton href="/levels/pre-made/add-sub">
+      <MenuButton href="/levels/browse?generatedBy=algorithm&operators=add,sub&sort=difficulty-asc">
         Addition and Subtraction
       </MenuButton>
-      <MenuButton href="/levels/pre-made/mul-div">
+
+      <MenuButton href="/levels/browse?generatedBy=algorithm&operators=mul,div&sort=difficulty-asc">
         Multiplication and Division
       </MenuButton>
     </MenuPageLayout>

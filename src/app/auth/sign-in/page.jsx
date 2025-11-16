@@ -6,28 +6,25 @@ import Link from "next/link";
 import { AuthService } from "@/services/auth.service";
 import "../styles.css";
 
-export default function SignUpPage() {
+export default function SignInPage() {
   const router = useRouter();
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function validate() {
     const next = {};
 
-    if (!name.trim()) next.name = "Name is required.";
     if (!email.trim()) next.email = "Email is required.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       next.email = "Invalid email format.";
+
     if (!password.trim()) next.password = "Password is required.";
-    else if (password.length < 8)
-      next.password = "Must be at least 8 characters.";
 
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -36,53 +33,33 @@ export default function SignUpPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setServerError("");
-    setSuccess("");
+    setSuccessMsg("");
 
     if (!validate()) return;
 
-    setLoading(true);
-    const res = await AuthService.register({ name, email, password });
-    setLoading(false);
+    setSubmitting(true);
+    const res = await AuthService.login({ email, password });
+    setSubmitting(false);
 
     if (!res.ok) {
-      setServerError(res.error || "Registration failed.");
+      setServerError(res.error || "Invalid credentials.");
       return;
     }
 
-    setSuccess("Account created successfully! Redirecting to sign in…");
-    setTimeout(() => router.push("/auth/sign-in"), 1000);
+    setSuccessMsg("Signed in successfully! Redirecting…");
+    setTimeout(() => router.push("/users/me"), 800);
   }
 
   return (
     <main className="auth-page">
       <div className="auth-wrapper">
         <div className="auth-card">
-          <h1 className="auth-title">Create account</h1>
+          <h1 className="auth-title">Sign in</h1>
           <p className="auth-subtitle">
-            Sign up to start playing Kiwi Num Slide.
+            Log in to continue playing Kiwi Num Slide.
           </p>
 
           <form onSubmit={handleSubmit} className="auth-form" noValidate>
-            {/* Name */}
-            <div className="auth-field">
-              <label htmlFor="name" className="auth-label">
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                className={`auth-input ${
-                  errors.name ? "auth-input-error" : ""
-                }`}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                aria-invalid={errors.name ? "true" : "false"}
-              />
-              {errors.name && (
-                <p className="auth-error">{errors.name}</p>
-              )}
-            </div>
-
             {/* Email */}
             <div className="auth-field">
               <label htmlFor="email" className="auth-label">
@@ -97,6 +74,7 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 aria-invalid={errors.email ? "true" : "false"}
+                autoComplete="email"
               />
               {errors.email && (
                 <p className="auth-error">{errors.email}</p>
@@ -117,8 +95,8 @@ export default function SignUpPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 aria-invalid={errors.password ? "true" : "false"}
+                autoComplete="current-password"
               />
-              <p className="auth-helper">At least 8 characters.</p>
               {errors.password && (
                 <p className="auth-error">{errors.password}</p>
               )}
@@ -132,23 +110,23 @@ export default function SignUpPage() {
             )}
 
             {/* Success */}
-            {success && (
-              <p className="auth-success">{success}</p>
+            {successMsg && (
+              <p className="auth-success">{successMsg}</p>
             )}
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="auth-button"
             >
-              {loading ? "Creating account…" : "Sign up"}
+              {submitting ? "Signing in…" : "Sign in"}
             </button>
           </form>
 
           <p className="auth-bottom-text">
-            Already have an account?{" "}
-            <Link href="/auth/sign-in" className="auth-link">
-              Sign in
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/sign-up" className="auth-link">
+              Create an account
             </Link>
           </p>
         </div>

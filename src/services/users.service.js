@@ -93,4 +93,25 @@ export const UsersService = {
       method: "GET",
     });
   },
+
+  browse({
+    q = null,
+    followersOf = null,  // id | "me"
+    followingOf = null,  // id | "me"
+    sort = "created_at_desc",
+    limit = 20,
+    cursor = null,
+  } = {}) {
+    const qs = new URLSearchParams();
+
+    if (q) qs.set("q", String(q));
+    if (followersOf) qs.set("followersOf", String(followersOf));
+    if (followingOf) qs.set("followingOf", String(followingOf));
+    if (sort) qs.set("sort", String(sort));
+    if (limit != null) qs.set("limit", String(limit));
+    if (cursor) qs.set("cursor", String(cursor));
+
+    return apiFetch(`/users?${qs.toString()}`, { method: "GET" });
+  },
+  
 };

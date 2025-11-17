@@ -41,9 +41,11 @@ export const UsersService = {
   },
 
   /** GET /users/:user_id */
-  getPublic(userId) {
-    const id = Number(userId);
-    return apiFetch(`/users/${id}`, { method: "GET" });
+  getPublicProfile(userId) {
+    return apiFetch(`/users/${userId}`, {
+      method: "GET",
+      csrf: false, // es un GET público
+    });
   },
 
   /** POST /users/:user_id/follow */
@@ -113,5 +115,21 @@ export const UsersService = {
 
     return apiFetch(`/users?${qs.toString()}`, { method: "GET" });
   },
-  
+
+
+  /** GET /puzzles?authorId=... → lista de puzzles creados por el user */
+  getCreatedPuzzles(userId, { limit = 12, sort = "created_at_desc" } = {}) {
+    const qs = new URLSearchParams({
+      authorId: String(userId),
+      limit: String(limit),
+      sort,
+    }).toString();
+
+    return apiFetch(`/puzzles?${qs}`, {
+      method: "GET",
+      csrf: false,
+    });
+  },
+
+
 };

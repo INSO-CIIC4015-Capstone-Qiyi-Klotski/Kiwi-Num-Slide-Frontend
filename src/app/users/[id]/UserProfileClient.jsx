@@ -541,7 +541,7 @@ const [verifyError, setVerifyError] = useState("");
               href={`/users/browse?followingOf=${user.id}`}
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <ProfileStat label="Following" value="—" asLink />
+              <ProfileStat label="Following" value={user.stats?.following ?? 0} asLink />
             </Link>
           </section>
 

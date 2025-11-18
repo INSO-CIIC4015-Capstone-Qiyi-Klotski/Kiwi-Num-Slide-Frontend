@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthService } from "@/services/auth.service";
 import { UsersService } from "@/services/users.service";
+import { useRouter } from "next/navigation";
 
 export default function UserProfileClient({
   userId: rawId,
@@ -13,6 +14,11 @@ export default function UserProfileClient({
 }) {
   const userId =
     typeof rawId === "string" && /^\d+$/.test(rawId) ? Number(rawId) : null;
+
+  const router = useRouter();
+
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [logoutError, setLogoutError] = useState("");     
 
   const [user, setUser] = useState(initialUser);
   const [authUser, setAuthUser] = useState(null);
@@ -34,9 +40,14 @@ export default function UserProfileClient({
   const [nameError, setNameError] = useState("");
 
   // arriba de todo, junto con los otros useState
-const [verifySending, setVerifySending] = useState(false);
-const [verifyMessage, setVerifyMessage] = useState("");
-const [verifyError, setVerifyError] = useState("");
+  const [verifySending, setVerifySending] = useState(false);
+  const [verifyMessage, setVerifyMessage] = useState("");
+  const [verifyError, setVerifyError] = useState("");
+
+  // estado para follow / unfollow
+  const [followLoading, setFollowLoading] = useState(false);
+  const [followMessage, setFollowMessage] = useState("");
+  const [followError, setFollowError] = useState("");
 
   // helper para revalidar ISR desde el cliente
   async function triggerRevalidateForUser(targetUserId) {
@@ -149,6 +160,127 @@ const [verifyError, setVerifyError] = useState("");
       setVerifyError("Failed to send verification email.");
     } finally {
       setVerifySending(false);
+    }
+  }
+
+   async function handleLogout() {
+    setLogoutLoading(true);
+    setLogoutError("");
+
+    try {
+      const res = await AuthService.logout();
+
+      if (!res.ok) {
+        setLogoutError(res.error || "Failed to log out.");
+        return;
+      }
+
+      // limpiar el usuario autenticado en el estado
+      setAuthUser(null);
+
+      // opcional: también podrías limpiar verifyMessage, etc.
+      // setVerifyMessage("");
+      // setVerifyError("");
+
+      // redirigir a la página de login
+      router.push("/auth/sign-in");
+    } catch {
+      setLogoutError("Failed to log out.");
+    } finally {
+      setLogoutLoading(false);
+    }
+  }
+
+  function redirectToSignIn() {
+    // opcional: preservar a dónde volver
+    const next = `/users/${user?.id ?? ""}`;
+    window.location.href = `/auth/sign-in?next=${encodeURIComponent(next)}`;
+  }
+
+  async function handleFollowClick() {
+    if (!user) return;
+
+    // si NO hay usuario logueado -> redirigir
+    if (!authUser) {
+      redirectToSignIn();
+      return;
+    }
+
+    setFollowLoading(true);
+    setFollowMessage("");
+    setFollowError("");
+
+    try {
+      const res = await UsersService.follow(user.id);
+
+      if (!res.ok) {
+        setFollowError(res.error || "Failed to follow user.");
+        return;
+      }
+
+      const changed =
+        typeof res.data === "object" ? !!res.data.changed : false;
+
+      if (changed) {
+        setFollowMessage("Now following this user.");
+        triggerRevalidateForUser(user.id);
+        triggerRevalidateForUser(authUser.id);
+        
+      } else {
+        setFollowMessage("You were already following this user.");
+      }
+    } catch {
+      setFollowError("Failed to follow user.");
+    } finally {
+      setFollowLoading(false);
+
+      // limpiar el mensaje después de 3s
+      setTimeout(() => {
+        setFollowMessage("");
+        setFollowError("");
+      }, 3000);
+    }
+  }
+
+  async function handleUnfollowClick() {
+    if (!user) return;
+
+    if (!authUser) {
+      redirectToSignIn();
+      return;
+    }
+
+    setFollowLoading(true);
+    setFollowMessage("");
+    setFollowError("");
+
+    try {
+      const res = await UsersService.unfollow(user.id);
+
+      if (!res.ok) {
+        setFollowError(res.error || "Failed to unfollow user.");
+        return;
+      }
+
+      const changed =
+        typeof res.data === "object" ? !!res.data.changed : false;
+
+      if (changed) {
+        setFollowMessage("You unfollowed this user.");
+        triggerRevalidateForUser(user.id);
+        triggerRevalidateForUser(authUser.id);
+      } else {
+        setFollowMessage("You were not following this user.");
+      }
+    } catch {
+      setFollowError("Failed to unfollow user.");
+    } finally {
+      setFollowLoading(false);
+
+      setTimeout(() => {
+        setFollowMessage("");
+        setFollowError("");
+      }, 3000);
     }
   }
   
@@ -449,18 +581,80 @@ const [verifyError, setVerifyError] = useState("");
               {isOwner ? (
                 <>
                   <span style={ownerBadge}>Your profile</span>
+
+                  <button
+                    type="button"
+                    style={ghostBtn}
+                    onClick={handleLogout}
+                    disabled={logoutLoading}
+                  >
+                    {logoutLoading ? "Logging out…" : "Log out"}
+                  </button>
+
+                  {logoutError && (
+                    <p
+                      style={{
+                        ...ownerInfoText,
+                        color: "#b91c1c",
+                        marginTop: 4,
+                        textAlign: "right",
+                      }}
+                    >
+                      {logoutError}
+                    </p>
+                  )}
                 </>
               ) : (
-                <button
-                  type="button"
-                  style={primaryBtn}
-                  disabled
-                  title="Follow/unfollow coming soon"
-                >
-                  Follow
-                </button>
+                <>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button
+                      type="button"
+                      style={primaryBtn}
+                      onClick={handleFollowClick}
+                      disabled={followLoading}
+                    >
+                      {followLoading ? "Working..." : "Follow"}
+                    </button>
+
+                    <button
+                      type="button"
+                      style={ghostBtn}
+                      onClick={handleUnfollowClick}
+                      disabled={followLoading}
+                    >
+                      {followLoading ? "Working..." : "Unfollow"}
+                    </button>
+                  </div>
+
+                  {followMessage && (
+                    <p
+                      style={{
+                        ...ownerInfoText,
+                        color: "#15803d",
+                        marginTop: 4,
+                        textAlign: "right",
+                      }}
+                    >
+                      {followMessage}
+                    </p>
+                  )}
+
+                  {followError && (
+                    <p
+                      style={{
+                        ...ownerInfoText,
+                        color: "#b91c1c",
+                        marginTop: 4,
+                        textAlign: "right",
+                      }}
+                    >
+                      {followError}
+                    </p>
+                  )}
+                </>
               )}
             </div>
+
           </header>
 
           {/* Avatar picker (solo owner) */}

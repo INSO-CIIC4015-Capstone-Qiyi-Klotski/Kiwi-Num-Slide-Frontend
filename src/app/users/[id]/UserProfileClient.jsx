@@ -6,14 +6,18 @@ import Link from "next/link";
 import { AuthService } from "@/services/auth.service";
 import { UsersService } from "@/services/users.service";
 
-export default function UserProfileClient({ userId: rawId }) {
+export default function UserProfileClient({
+  userId: rawId,
+  initialUser = null,
+  initialPuzzles = [],
+}) {
   const userId =
     typeof rawId === "string" && /^\d+$/.test(rawId) ? Number(rawId) : null;
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(initialUser);
   const [authUser, setAuthUser] = useState(null);
-  const [puzzles, setPuzzles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [puzzles, setPuzzles] = useState(initialPuzzles ?? []);
+  const [loading, setLoading] = useState(!initialUser);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -27,13 +31,24 @@ export default function UserProfileClient({ userId: rawId }) {
 
     async function load() {
       try {
-        setLoading(true);
         setError("");
 
+        // Solo vuelvo a pedir el perfil si NO vino del servidor
+        const userPromise = initialUser
+          ? Promise.resolve({ ok: true, data: initialUser })
+          : UsersService.getPublicProfile(userId);
+
+        // Solo vuelvo a pedir puzzles si no vinieron del servidor
+        const puzzlesPromise =
+          initialPuzzles && initialPuzzles.length > 0
+            ? Promise.resolve({ ok: true, data: { items: initialPuzzles } })
+            : UsersService.getCreatedPuzzles(userId, { limit: 12 });
+
+        // Auth siempre se resuelve en cliente
         const [userRes, statusRes, puzzlesRes] = await Promise.all([
-          UsersService.getPublicProfile(userId),
+          userPromise,
           AuthService.status(),
-          UsersService.getCreatedPuzzles(userId, { limit: 12 }),
+          puzzlesPromise,
         ]);
 
         if (!active) return;
@@ -42,6 +57,7 @@ export default function UserProfileClient({ userId: rawId }) {
           setError(userRes.error || "User not found.");
           setUser(null);
           setPuzzles([]);
+          setLoading(false);
           return;
         }
 
@@ -54,7 +70,10 @@ export default function UserProfileClient({ userId: rawId }) {
         if (!active) return;
         setError("Failed to load profile.");
       } finally {
-        if (active) setLoading(false);
+        if (active && !initialUser) {
+          // si ya venía del server, nunca mostramos el skeleton
+          setLoading(false);
+        }
       }
     }
 
@@ -63,7 +82,7 @@ export default function UserProfileClient({ userId: rawId }) {
     return () => {
       active = false;
     };
-  }, [userId]);
+  }, [userId, initialUser, initialPuzzles]);
 
   const isOwner = !!(authUser && user && authUser.id === user.id);
 
@@ -247,7 +266,7 @@ function ProfileStat({ label, value, asLink = false }) {
   );
 }
 
-/* estilos inline igual que antes */
+// estilos inline igual que antes...
 const pageBg = {
   minHeight: "calc(100vh - 56px)",
   background: "#fdf5ff",

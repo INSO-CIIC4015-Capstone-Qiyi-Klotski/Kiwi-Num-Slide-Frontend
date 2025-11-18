@@ -132,4 +132,21 @@ export const UsersService = {
   },
 
 
+  // GET /users/avatar-catalog -> { items: [{ key, url }] }
+getAvatarCatalog() {
+  return apiFetch("/users/avatar-catalog", {
+    method: "GET",
+    csrf: false,
+  });
+},
+
+// PATCH /users/me/avatar -> PublicUser
+updateMyAvatar(avatarKey) {
+  return apiFetch("/users/me/avatar", {
+    method: "PATCH",
+    body: JSON.stringify({ avatar_key: avatarKey }),
+  });
+},
+
+
 };

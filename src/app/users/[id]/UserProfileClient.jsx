@@ -20,6 +20,13 @@ export default function UserProfileClient({
   const [loading, setLoading] = useState(!initialUser);
   const [error, setError] = useState("");
 
+  // 👇 estado del avatar picker
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [avatarCatalog, setAvatarCatalog] = useState([]);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
+  const [avatarSaving, setAvatarSaving] = useState(false);
+
   useEffect(() => {
     if (!userId) {
       setError("Invalid user id.");
@@ -42,7 +49,7 @@ export default function UserProfileClient({
         const puzzlesPromise =
           initialPuzzles && initialPuzzles.length > 0
             ? Promise.resolve({ ok: true, data: { items: initialPuzzles } })
-            : UsersService.getCreatedPuzzles(userId, { limit: 2 });
+            : UsersService.getCreatedPuzzles(userId, { limit: 12 });
 
         // Auth siempre se resuelve en cliente
         const [userRes, statusRes, puzzlesRes] = await Promise.all([
@@ -86,6 +93,75 @@ export default function UserProfileClient({
 
   const isOwner = !!(authUser && user && authUser.id === user.id);
 
+  // 👇 abrir/cerrar picker y cargar catálogo de S3
+  async function handleToggleAvatarPicker() {
+    if (showAvatarPicker) {
+      setShowAvatarPicker(false);
+      return;
+    }
+
+    setShowAvatarPicker(true);
+    setAvatarError("");
+
+    if (avatarCatalog.length > 0) return;
+
+    try {
+      setAvatarLoading(true);
+      const res = await UsersService.getAvatarCatalog();
+      if (!res.ok) {
+        setAvatarError(res.error || "Failed to load avatars.");
+        return;
+      }
+      const items = Array.isArray(res.data?.items) ? res.data.items : [];
+      setAvatarCatalog(items);
+    } catch {
+      setAvatarError("Failed to load avatars.");
+    } finally {
+      setAvatarLoading(false);
+    }
+  }
+
+  // 👇 seleccionar un avatar y enviar PATCH /users/me/avatar
+  async function handleSelectAvatar(item) {
+  if (!user) return;
+
+  setAvatarSaving(true);
+  setError("");
+
+  try {
+    const res = await UsersService.updateMyAvatar(item.key);
+    if (!res.ok) {
+      setError(res.error || "Failed to update avatar.");
+      return;
+    }
+
+    // 1) Actualizar el estado local para que se vea inmediato
+    setUser((prev) =>
+      prev
+        ? {
+            ...prev,
+            avatar_url: item.url,
+          }
+        : prev
+    );
+
+    // 2) Cerrar el picker si quieres
+    setShowAvatarPicker(false);
+
+    // 3) Disparar revalidación ISR en el servidor de Next
+    //    (no esperamos el resultado para no bloquear la UX)
+    fetch("/api/revalidate-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user.id }),
+    }).catch(() => {
+      // en dev podemos ignorar errores silenciosamente
+    });
+  } finally {
+    setAvatarSaving(false);
+  }
+}
+
   if (loading) {
     return (
       <main style={pageBg}>
@@ -115,7 +191,6 @@ export default function UserProfileClient({
   }
 
   const createdAt = user.created_at ? new Date(user.created_at) : null;
-  const hasPuzzles = puzzles && puzzles.length > 0;
 
   return (
     <main style={pageBg}>
@@ -172,8 +247,12 @@ export default function UserProfileClient({
               {isOwner ? (
                 <>
                   <span style={ownerBadge}>Your profile</span>
-                  <button type="button" style={ghostBtn}>
-                    Settings
+                  <button
+                    type="button"
+                    style={ghostBtn}
+                    onClick={handleToggleAvatarPicker}
+                  >
+                    {showAvatarPicker ? "Close avatar picker" : "Change avatar"}
                   </button>
                 </>
               ) : (
@@ -188,6 +267,63 @@ export default function UserProfileClient({
               )}
             </div>
           </header>
+
+          {/* Avatar picker (solo owner) */}
+          {isOwner && showAvatarPicker && (
+            <section aria-label="Avatar picker" style={avatarSection}>
+              <div style={avatarPickerHeader}>
+                <h2 style={sectionTitle}>Choose your avatar</h2>
+                <button
+                  type="button"
+                  style={closeBtn}
+                  onClick={() => setShowAvatarPicker(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              {avatarLoading ? (
+                <p style={subtitle}>Loading avatars…</p>
+              ) : avatarError ? (
+                <p style={{ ...subtitle, color: "#b91c1c" }}>{avatarError}</p>
+              ) : avatarCatalog.length === 0 ? (
+                <p style={subtitle}>No avatars available.</p>
+              ) : (
+                <div style={avatarGrid}>
+                  {avatarCatalog.map((item) => {
+                    const isSelected = user.avatar_key === item.key;
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        style={{
+                          ...avatarOption,
+                          ...(isSelected ? avatarOptionSelected : null),
+                        }}
+                        onClick={() =>
+                          !avatarSaving && handleSelectAvatar(item)
+                        }
+                        disabled={avatarSaving}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.url}
+                          alt={item.key}
+                          style={avatarThumb}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {avatarSaving && (
+                <p style={{ ...subtitle, marginTop: 8 }}>
+                  Saving avatar choice…
+                </p>
+              )}
+            </section>
+          )}
 
           {/* Stats */}
           <section aria-label="User stats" style={statsRow}>
@@ -217,7 +353,7 @@ export default function UserProfileClient({
           {/* Created levels */}
           <section aria-label="Created puzzles" style={{ marginTop: 24 }}>
             <h2 style={sectionTitle}>Created levels</h2>
-            {!hasPuzzles ? (
+            {puzzles.length === 0 ? (
               <p style={subtitle}>
                 {isOwner
                   ? "You haven’t created any levels yet."
@@ -225,7 +361,7 @@ export default function UserProfileClient({
               </p>
             ) : (
               <div style={puzzlesGrid}>
-                {puzzles.slice(0, 2).map((puzzle) => (
+                {puzzles.map((puzzle) => (
                   <Link
                     key={puzzle.id}
                     href={`/levels/${puzzle.id}`}
@@ -245,11 +381,11 @@ export default function UserProfileClient({
               </div>
             )}
 
-            {/* Botón para ver todos los niveles creados (siempre visible) */}
-            <div style={sectionFooter}>
+            {/* Botón "ver todos" centrado */}
+            <div style={seeAllWrapper}>
               <Link
                 href={`/levels/browse?authorId=${user.id}`}
-                style={seeAllLinkBtn}
+                style={seeAllButton}
               >
                 See all created levels →
               </Link>
@@ -277,7 +413,7 @@ function ProfileStat({ label, value, asLink = false }) {
   );
 }
 
-// estilos inline igual que antes...
+/* estilos inline igual que antes... */
 const pageBg = {
   minHeight: "calc(100vh - 56px)",
   background: "#fdf5ff",
@@ -461,19 +597,74 @@ const puzzleMeta = {
   margin: 0,
 };
 
-const sectionFooter = {
-  marginTop: 12,
+const seeAllWrapper = {
   display: "flex",
   justifyContent: "center",
+  marginTop: 16,
 };
 
-const seeAllLinkBtn = {
-  fontSize: 13,
-  fontWeight: 600,
+const seeAllButton = {
   padding: "8px 16px",
   borderRadius: 999,
   border: "1px solid #d1d5db",
   background: "#ffffff",
-  color: "#111827",
+  fontSize: 13,
+  fontWeight: 500,
   textDecoration: "none",
+  color: "#111827",
+};
+
+const avatarSection = {
+  marginTop: 12,
+  marginBottom: 16,
+  padding: 12,
+  borderRadius: 14,
+  background: "#f9fafb",
+  border: "1px solid #e5e7eb",
+};
+
+const avatarPickerHeader = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginBottom: 8,
+};
+
+const closeBtn = {
+  border: "none",
+  background: "transparent",
+  fontSize: 18,
+  lineHeight: 1,
+  cursor: "pointer",
+  padding: 4,
+};
+
+const avatarGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(64px, 1fr))",
+  gap: 8,
+  marginTop: 8,
+};
+
+const avatarOption = {
+  borderRadius: 12,
+  border: "1px solid #e5e7eb",
+  padding: 4,
+  background: "#ffffff",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
+
+const avatarOptionSelected = {
+  borderColor: "#8b5cf6",
+  boxShadow: "0 0 0 2px rgba(139, 92, 246, 0.3)",
+};
+
+const avatarThumb = {
+  width: 56,
+  height: 56,
+  borderRadius: 999,
+  objectFit: "cover",
 };

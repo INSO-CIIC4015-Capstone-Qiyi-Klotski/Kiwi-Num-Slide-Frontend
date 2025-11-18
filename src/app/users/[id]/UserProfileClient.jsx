@@ -33,6 +33,11 @@ export default function UserProfileClient({
   const [nameSaving, setNameSaving] = useState(false);
   const [nameError, setNameError] = useState("");
 
+  // arriba de todo, junto con los otros useState
+const [verifySending, setVerifySending] = useState(false);
+const [verifyMessage, setVerifyMessage] = useState("");
+const [verifyError, setVerifyError] = useState("");
+
   // helper para revalidar ISR desde el cliente
   async function triggerRevalidateForUser(targetUserId) {
     try {
@@ -118,7 +123,35 @@ export default function UserProfileClient({
   }, [user, isEditingName]);
 
   const isOwner = !!(authUser && user && authUser.id === user.id);
+  const privateUser = isOwner && authUser ? authUser : null;
 
+  // 👇 handler para enviar email de verificación
+  async function handleSendVerificationEmail() {
+    const email = authUser?.email || user?.email;
+    if (!email) return;
+
+    setVerifySending(true);
+    setVerifyMessage("");
+    setVerifyError("");
+
+    try {
+      const res = await AuthService.sendVerificationEmail({ email });
+      if (!res.ok) {
+        setVerifyError(res.error || "Failed to send verification email.");
+        return;
+      }
+
+      const msg =
+        (typeof res.data === "object" && res.data?.message) ||
+        "Verification email sent. Please check your inbox.";
+      setVerifyMessage(msg);
+    } catch {
+      setVerifyError("Failed to send verification email.");
+    } finally {
+      setVerifySending(false);
+    }
+  }
+  
   // abrir/cerrar picker y cargar catálogo de S3
   async function handleToggleAvatarPicker() {
     if (showAvatarPicker) {
@@ -377,10 +410,36 @@ export default function UserProfileClient({
 
               {isOwner && (
                 <div style={ownerInfoRow}>
-                  {user.email && (
+                  {privateUser?.email && (
                     <p style={ownerInfoText}>
-                      <strong>Email:</strong> {user.email}
+                      <strong>Email:</strong> {privateUser.email}{" "}
+                      {privateUser.is_verified ? (
+                        <span style={verifiedBadge}>Verified</span>
+                      ) : (
+                        <span style={unverifiedBadge}>Not verified</span>
+                      )}
                     </p>
+                  )}
+
+                  {/* Botón solo si NO está verificado */}
+                  {privateUser?.email && !privateUser.is_verified && (
+                    <button
+                      type="button"
+                      style={verifyBtn}
+                      onClick={handleSendVerificationEmail}
+                      disabled={verifySending}
+                    >
+                      {verifySending
+                        ? "Sending verification email…"
+                        : "Send verification email"}
+                    </button>
+                  )}
+
+                  {verifyMessage && (
+                    <p style={{ ...ownerInfoText, color: "#15803d" }}>{verifyMessage}</p>
+                  )}
+                  {verifyError && (
+                    <p style={{ ...ownerInfoText, color: "#b91c1c" }}>{verifyError}</p>
                   )}
                 </div>
               )}
@@ -879,4 +938,39 @@ const avatarThumb = {
   height: 56,
   borderRadius: 999,
   objectFit: "cover",
+};
+
+const verifiedBadge = {
+  marginLeft: 8,
+  padding: "2px 8px",
+  borderRadius: 999,
+  background: "#ecfdf3",
+  color: "#166534",
+  fontSize: 11,
+  fontWeight: 600,
+  border: "1px solid #bbf7d0",
+};
+
+const unverifiedBadge = {
+  marginLeft: 8,
+  padding: "2px 8px",
+  borderRadius: 999,
+  background: "#fef2f2",
+  color: "#b91c1c",
+  fontSize: 11,
+  fontWeight: 600,
+  border: "1px solid #fecaca",
+};
+
+const verifyBtn = {
+  marginTop: 4,
+  padding: "6px 12px",
+  borderRadius: 999,
+  border: "1px solid #111827",
+  background: "#111827",
+  color: "#ffffff",
+  fontSize: 13,
+  fontWeight: 500,
+  cursor: "pointer",
+  alignSelf: "flex-start",
 };

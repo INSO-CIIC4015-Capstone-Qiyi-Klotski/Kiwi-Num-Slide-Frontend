@@ -22,7 +22,7 @@ async function getPublicUser(id) {
 async function getCreatedPuzzles(id) {
   const qs = new URLSearchParams({
     authorId: String(id),
-    limit: "12",
+    limit: "2", // 👈 solo queremos 2 para el preview
     sort: "created_at_desc",
   });
 
@@ -30,7 +30,7 @@ async function getCreatedPuzzles(id) {
     method: "GET",
     next: {
       revalidate,
-      tags: [`user:${id}:puzzles`], // nombre que quieras para las tags
+      tags: [`user:${id}:puzzles`],
     },
   });
 
@@ -45,7 +45,6 @@ export default async function UserProfilePage({ params }) {
   const id = typeof rawId === "string" ? rawId : "";
 
   if (!id || !/^\d+$/.test(id)) {
-    // podrías usar notFound() si quieres un 404 real
     return (
       <main style={{ padding: 32 }}>
         <h1>User not found</h1>
@@ -58,9 +57,6 @@ export default async function UserProfilePage({ params }) {
     getPublicUser(id),
     getCreatedPuzzles(id),
   ]);
-
-  // si quieres, puedes hacer un early 404 si no hay usuario
-  // if (!initialUser) notFound();
 
   return (
     <UserProfileClient

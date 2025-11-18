@@ -42,7 +42,7 @@ export default function UserProfileClient({
         const puzzlesPromise =
           initialPuzzles && initialPuzzles.length > 0
             ? Promise.resolve({ ok: true, data: { items: initialPuzzles } })
-            : UsersService.getCreatedPuzzles(userId, { limit: 12 });
+            : UsersService.getCreatedPuzzles(userId, { limit: 2 });
 
         // Auth siempre se resuelve en cliente
         const [userRes, statusRes, puzzlesRes] = await Promise.all([
@@ -115,6 +115,7 @@ export default function UserProfileClient({
   }
 
   const createdAt = user.created_at ? new Date(user.created_at) : null;
+  const hasPuzzles = puzzles && puzzles.length > 0;
 
   return (
     <main style={pageBg}>
@@ -216,7 +217,7 @@ export default function UserProfileClient({
           {/* Created levels */}
           <section aria-label="Created puzzles" style={{ marginTop: 24 }}>
             <h2 style={sectionTitle}>Created levels</h2>
-            {puzzles.length === 0 ? (
+            {!hasPuzzles ? (
               <p style={subtitle}>
                 {isOwner
                   ? "You haven’t created any levels yet."
@@ -224,7 +225,7 @@ export default function UserProfileClient({
               </p>
             ) : (
               <div style={puzzlesGrid}>
-                {puzzles.map((puzzle) => (
+                {puzzles.slice(0, 2).map((puzzle) => (
                   <Link
                     key={puzzle.id}
                     href={`/levels/${puzzle.id}`}
@@ -243,6 +244,16 @@ export default function UserProfileClient({
                 ))}
               </div>
             )}
+
+            {/* Botón para ver todos los niveles creados (siempre visible) */}
+            <div style={sectionFooter}>
+              <Link
+                href={`/levels/browse?authorId=${user.id}`}
+                style={seeAllLinkBtn}
+              >
+                See all created levels →
+              </Link>
+            </div>
           </section>
         </div>
       </div>
@@ -448,4 +459,21 @@ const puzzleMeta = {
   fontSize: 12,
   color: "#6b7280",
   margin: 0,
+};
+
+const sectionFooter = {
+  marginTop: 12,
+  display: "flex",
+  justifyContent: "center",
+};
+
+const seeAllLinkBtn = {
+  fontSize: 13,
+  fontWeight: 600,
+  padding: "8px 16px",
+  borderRadius: 999,
+  border: "1px solid #d1d5db",
+  background: "#ffffff",
+  color: "#111827",
+  textDecoration: "none",
 };

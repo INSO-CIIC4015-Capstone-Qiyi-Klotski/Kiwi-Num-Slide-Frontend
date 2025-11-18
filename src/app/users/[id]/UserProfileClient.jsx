@@ -20,12 +20,31 @@ export default function UserProfileClient({
   const [loading, setLoading] = useState(!initialUser);
   const [error, setError] = useState("");
 
-  // 👇 estado del avatar picker
+  // estado del avatar picker
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [avatarCatalog, setAvatarCatalog] = useState([]);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [avatarError, setAvatarError] = useState("");
   const [avatarSaving, setAvatarSaving] = useState(false);
+
+  // estado para edición de nombre
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [nameSaving, setNameSaving] = useState(false);
+  const [nameError, setNameError] = useState("");
+
+  // helper para revalidar ISR desde el cliente
+  async function triggerRevalidateForUser(targetUserId) {
+    try {
+      await fetch("/api/revalidate-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: targetUserId }),
+      });
+    } catch {
+      // en dev podemos ignorar errores silenciosamente
+    }
+  }
 
   useEffect(() => {
     if (!userId) {
@@ -91,9 +110,16 @@ export default function UserProfileClient({
     };
   }, [userId, initialUser, initialPuzzles]);
 
+  // mantener nameInput sincronizado con el usuario cuando no se está editando
+  useEffect(() => {
+    if (user && !isEditingName) {
+      setNameInput(user.display_name || "");
+    }
+  }, [user, isEditingName]);
+
   const isOwner = !!(authUser && user && authUser.id === user.id);
 
-  // 👇 abrir/cerrar picker y cargar catálogo de S3
+  // abrir/cerrar picker y cargar catálogo de S3
   async function handleToggleAvatarPicker() {
     if (showAvatarPicker) {
       setShowAvatarPicker(false);
@@ -121,46 +147,97 @@ export default function UserProfileClient({
     }
   }
 
-  // 👇 seleccionar un avatar y enviar PATCH /users/me/avatar
+  // seleccionar un avatar y enviar PATCH /users/me/avatar
   async function handleSelectAvatar(item) {
-  if (!user) return;
+    if (!user) return;
 
-  setAvatarSaving(true);
-  setError("");
+    setAvatarSaving(true);
+    setError("");
 
-  try {
-    const res = await UsersService.updateMyAvatar(item.key);
-    if (!res.ok) {
-      setError(res.error || "Failed to update avatar.");
+    try {
+      const res = await UsersService.updateMyAvatar(item.key);
+      if (!res.ok) {
+        setError(res.error || "Failed to update avatar.");
+        return;
+      }
+
+      // 1) Actualizar el estado local para que se vea inmediato
+      setUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              avatar_url: item.url,
+              avatar_key: item.key,
+            }
+          : prev
+      );
+
+      // 2) Cerrar el picker
+      setShowAvatarPicker(false);
+
+      // 3) Disparar revalidación ISR en el servidor de Next
+      triggerRevalidateForUser(user.id);
+    } finally {
+      setAvatarSaving(false);
+    }
+  }
+
+  // flujo de edición de nombre
+  function handleStartEditName() {
+    setNameError("");
+    setIsEditingName(true);
+    setNameInput(user?.display_name || "");
+  }
+
+  function handleCancelEditName() {
+    setIsEditingName(false);
+    setNameError("");
+    setNameInput(user?.display_name || "");
+  }
+
+  async function handleSaveName() {
+    if (!user) return;
+    const trimmed = nameInput.trim();
+
+    if (!trimmed) {
+      setNameError("Name cannot be empty.");
+      return;
+    }
+    if (trimmed.length > 50) {
+      setNameError("Name must be at most 50 characters.");
       return;
     }
 
-    // 1) Actualizar el estado local para que se vea inmediato
-    setUser((prev) =>
-      prev
-        ? {
-            ...prev,
-            avatar_url: item.url,
-          }
-        : prev
-    );
+    setNameSaving(true);
+    setNameError("");
+    setError("");
 
-    // 2) Cerrar el picker si quieres
-    setShowAvatarPicker(false);
+    try {
+      const res = await UsersService.patchMe({ name: trimmed });
 
-    // 3) Disparar revalidación ISR en el servidor de Next
-    //    (no esperamos el resultado para no bloquear la UX)
-    fetch("/api/revalidate-user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id }),
-    }).catch(() => {
-      // en dev podemos ignorar errores silenciosamente
-    });
-  } finally {
-    setAvatarSaving(false);
+      if (!res.ok) {
+        setNameError(res.error || "Failed to update name.");
+        return;
+      }
+
+      // actualizar estado local
+      setUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              display_name: trimmed,
+            }
+          : prev
+      );
+
+      setIsEditingName(false);
+
+      // revalidar ISR en segundo plano
+      triggerRevalidateForUser(user.id);
+    } finally {
+      setNameSaving(false);
+    }
   }
-}
 
   if (loading) {
     return (
@@ -218,10 +295,76 @@ export default function UserProfileClient({
                   </span>
                 )}
               </div>
+
+              {isOwner && (
+                <button
+                  type="button"
+                  style={avatarEditBtn}
+                  onClick={handleToggleAvatarPicker}
+                  aria-label="Change avatar"
+                >
+                  ✏️
+                </button>
+              )}
             </div>
 
             <div style={{ flex: 1 }}>
-              <h1 style={title}>{user.display_name}</h1>
+              {/* Bloque de nombre con botón circular */}
+              <div style={nameBlock}>
+                <div style={nameRow}>
+                  {isOwner && isEditingName ? (
+                    <div style={nameEditRow}>
+                      <input
+                        type="text"
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                        maxLength={50}
+                        style={nameInputStyle}
+                        placeholder="Your display name"
+                        disabled={nameSaving}
+                      />
+                      <div style={nameButtonsRow}>
+                        <button
+                          type="button"
+                          style={primaryBtnSmall}
+                          onClick={handleSaveName}
+                          disabled={nameSaving}
+                        >
+                          {nameSaving ? "Saving…" : "Save"}
+                        </button>
+                        <button
+                          type="button"
+                          style={ghostBtnSmall}
+                          onClick={handleCancelEditName}
+                          disabled={nameSaving}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <h1 style={title}>{user.display_name}</h1>
+                  )}
+                </div>
+
+                {isOwner && !isEditingName && (
+                  <button
+                    type="button"
+                    style={nameEditBtn}
+                    onClick={handleStartEditName}
+                    aria-label="Edit name"
+                  >
+                    ✏️
+                  </button>
+                )}
+              </div>
+
+              {nameError && (
+                <p style={{ ...subtitle, color: "#b91c1c", marginTop: 4 }}>
+                  {nameError}
+                </p>
+              )}
+
               <p style={subtitle}>
                 Joined{" "}
                 {createdAt
@@ -247,13 +390,6 @@ export default function UserProfileClient({
               {isOwner ? (
                 <>
                   <span style={ownerBadge}>Your profile</span>
-                  <button
-                    type="button"
-                    style={ghostBtn}
-                    onClick={handleToggleAvatarPicker}
-                  >
-                    {showAvatarPicker ? "Close avatar picker" : "Change avatar"}
-                  </button>
                 </>
               ) : (
                 <button
@@ -455,7 +591,10 @@ const headerRow = {
   flexWrap: "wrap",
 };
 
-const avatarWrapper = { flexShrink: 0 };
+const avatarWrapper = {
+  flexShrink: 0,
+  position: "relative",
+};
 
 const avatarCircle = {
   width: 72,
@@ -612,6 +751,79 @@ const seeAllButton = {
   fontWeight: 500,
   textDecoration: "none",
   color: "#111827",
+};
+
+/* estilos extra para nombre editable */
+const nameBlock = {
+  position: "relative",
+  display: "inline-block",
+  maxWidth: "100%",
+};
+
+const nameRow = {
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  flexWrap: "wrap",
+};
+
+const nameEditRow = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
+};
+
+const nameInputStyle = {
+  padding: "6px 10px",
+  borderRadius: 999,
+  border: "1px solid #d1d5db",
+  fontSize: 14,
+  outline: "none",
+};
+
+const nameButtonsRow = {
+  display: "flex",
+  gap: 8,
+};
+
+const primaryBtnSmall = {
+  ...primaryBtn,
+  padding: "6px 12px",
+  fontSize: 13,
+};
+
+const ghostBtnSmall = {
+  ...ghostBtn,
+  padding: "6px 12px",
+  fontSize: 13,
+};
+
+// base para iconos circulares
+const editIconBase = {
+  position: "absolute",
+  width: 22,      // antes 28
+  height: 22,     // antes 28
+  borderRadius: 999,
+  border: "1px solid #e5e7eb",
+  background: "#ffffff",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  boxShadow: "0 4px 12px rgba(15, 23, 42, 0.18)",
+  cursor: "pointer",
+  fontSize: 12,   // un poco más pequeño
+};
+
+const avatarEditBtn = {
+  ...editIconBase,
+  right: -4,  // antes -6
+  top: -4,    // antes -6
+};
+
+const nameEditBtn = {
+  ...editIconBase,
+  right: -14, // más a la derecha (antes -6)
+  top: -10,   // más arriba (antes -6)
 };
 
 const avatarSection = {

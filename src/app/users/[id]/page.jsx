@@ -40,6 +40,40 @@ async function getCreatedPuzzles(id) {
   return items;
 }
 
+/**
+ * SEO dinámico para /users/[id]
+ * El título queda algo como:
+ *   "Janiel Núñez - Profile | KiwiNumSlide"
+ */
+export async function generateMetadata({ params }) {
+  const rawId = params?.id;
+  const id = typeof rawId === "string" ? rawId : "";
+
+  // Si el id es inválido, título genérico de error
+  if (!id || !/^\d+$/.test(id)) {
+    return {
+      title: "User not found - KiwiNumSlide",
+      description: "User profile not found.",
+    };
+  }
+
+  const user = await getPublicUser(id);
+
+  if (!user) {
+    return {
+      title: "User not found - KiwiNumSlide",
+      description: "User profile not found.",
+    };
+  }
+
+  const displayName = user.display_name || "User";
+
+  return {
+    title: `${displayName} - Profile | KiwiNumSlide`,
+    description: `View ${displayName}'s public profile on KiwiNumSlide.`,
+  };
+}
+
 export default async function UserProfilePage({ params }) {
   const rawId = params?.id;
   const id = typeof rawId === "string" ? rawId : "";

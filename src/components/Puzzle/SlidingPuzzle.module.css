@@ -322,6 +322,11 @@
   grid-template-rows: repeat(4, 70px);
 }
 
+.puzzleGridWrapper[data-size="5"] .puzzleGrid {
+  grid-template-columns: repeat(5, 70px);
+  grid-template-rows: repeat(5, 70px);
+}
+
 .tile {
   display: flex;
   align-items: center;
@@ -355,6 +360,14 @@
 }
 
 .puzzleGridWrapper[data-size="4"] .tile:nth-child(n+13) {
+  border-bottom: none;
+}
+
+.puzzleGridWrapper[data-size="5"] .tile:nth-child(5n) {
+  border-right: none;
+}
+
+.puzzleGridWrapper[data-size="5"] .tile:nth-child(n+21) {
   border-bottom: none;
 }
 

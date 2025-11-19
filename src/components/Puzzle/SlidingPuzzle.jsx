@@ -1,3 +1,4 @@
+// src/components/Puzzle/SlidingPuzzle.jsx
 "use client";
 import { useState, useCallback, useRef, useEffect } from 'react';
 import styles from './SlidingPuzzle.module.css';
@@ -19,34 +20,71 @@ import PuzzleTile from './PuzzleTile';
 import StaticGrid from './StaticGrid';
 import { fetchPuzzleDataFromBE } from './puzzle-api';
 
-export default function SlidingPuzzle({ initialN = 4 }) {
-  const [N, setN] = useState(initialN);
+// helper chiquito para comparar arrays
+function arraysEqual(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+/**
+ * Props extra:
+ * - mode: "daily" | "level"
+ * - initialUiPuzzle: { N, numbers, operators, expected }
+ * - puzzleId: number
+ * - onSolved: (finalState) => void
+ */
+export default function SlidingPuzzle({
+  initialN = 4,
+  mode = "daily",
+  initialUiPuzzle = null,
+  puzzleId = null,
+  onSolved = null,
+}) {
+  const [N, setN] = useState(
+    initialUiPuzzle && initialUiPuzzle.N ? initialUiPuzzle.N : initialN
+  );
   const [puzzle, setPuzzle] = useState(
-    initialN === 3 ? mockPuzzleDataN3 : mockPuzzleDataN4
+    initialUiPuzzle ||
+    (initialN === 3 ? mockPuzzleDataN3 : mockPuzzleDataN4)
   );
   const [draggedTile, setDraggedTile] = useState(null);
   const puzzleRef = useRef(null);
 
+  // Carga del puzzle:
+  // - Si `mode === "level"` y hay `initialUiPuzzle`, no llamamos al daily.
+  // - Si no, dejamos el comportamiento original del daily.
   useEffect(() => {
-  let cancelled = false;
-  (async () => {
-    try {
-      const uiPuzzle = await fetchPuzzleDataFromBE();
-      if (!cancelled) {
-        setN(uiPuzzle.N);
-        setPuzzle(uiPuzzle);
-        
-        // Lee resultados en consola (Chrome → Performance panel también los lista)
-        console.table(performance.getEntriesByType('measure').map(m => ({
-          name: m.name, ms: Math.round(m.duration)
-        })));
-      }
-    } catch (e) {
-      console.error(e);
+    if (mode === "level" && initialUiPuzzle) {
+      setN(initialUiPuzzle.N);
+      setPuzzle(initialUiPuzzle);
+      return;
     }
-  })();
-  return () => { cancelled = true; };
-}, []);
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const uiPuzzle = await fetchPuzzleDataFromBE();
+        if (!cancelled) {
+          setN(uiPuzzle.N);
+          setPuzzle(uiPuzzle);
+          
+          console.table(
+            performance.getEntriesByType('measure').map(m => ({
+              name: m.name, ms: Math.round(m.duration)
+            }))
+          );
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [mode, initialUiPuzzle]);
 
   // Handle tile click
   const handleTileClick = useCallback((row, col) => {
@@ -60,11 +98,36 @@ export default function SlidingPuzzle({ initialN = 4 }) {
     const emptyCol = emptyPos % N;
 
     const newNumbers = swapTiles(puzzle.numbers, row, col, emptyRow, emptyCol, N);
-    setPuzzle({ ...puzzle, numbers: newNumbers });
-  }, [puzzle, N]);
+    const nextPuzzle = { ...puzzle, numbers: newNumbers };
+    setPuzzle(nextPuzzle);
 
-  // Handle puzzle size change
+    // chequeo de "resuelto": comparamos current vs expected
+    if (onSolved && puzzle.expected) {
+      const nextHorizontal = calculateHorizontalCurrent(newNumbers, puzzle.operators, N);
+      const nextVertical = calculateVerticalCurrent(newNumbers, puzzle.operators, N);
+      const { vertical: verticalExpected, horizontal: horizontalExpected } =
+        getExpectedValues(puzzle.expected, N);
+
+      const okRows = arraysEqual(nextHorizontal, horizontalExpected);
+      const okCols = arraysEqual(nextVertical, verticalExpected);
+
+      if (okRows && okCols) {
+        onSolved({
+          numbers: newNumbers,
+          movements: [], // TODO: meter aquí la traza real de movimientos
+          puzzleId,
+        });
+      }
+    }
+  }, [puzzle, N, onSolved, puzzleId]);
+
+  // Handle puzzle size change (solo tiene sentido en modo daily)
   const handleNChange = async (newN) => {
+    if (mode === "level") {
+      // En levels dejamos fijo el tamaño; ignoramos cambios
+      return;
+    }
+
     try {
       const newPuzzle = await fetchPuzzleDataFromBE(newN);
       setN(newPuzzle.N);
@@ -77,22 +140,17 @@ export default function SlidingPuzzle({ initialN = 4 }) {
     }
   };
 
-  // Use custom hooks
+  // Hooks personalizados
   useKeyboardNavigation(puzzle, setPuzzle, puzzleRef);
   const dragHandlers = useDragAndDrop(puzzle, setPuzzle, draggedTile, setDraggedTile);
 
   const numbersGrid = getNumbersGrid(puzzle.numbers, N);
-  // Calculate current values based on puzzle state
-  // Note: horizontal calculations (rows) display on vertical grid (right side)
-  //       vertical calculations (columns) display on horizontal grid (below)
+
   const horizontalCurrent = calculateHorizontalCurrent(puzzle.numbers, puzzle.operators, N);
   const verticalCurrent = calculateVerticalCurrent(puzzle.numbers, puzzle.operators, N);
   
-  // Extract expected values from puzzle data
-  // Expected format: [row0, row1, row2, row3, col0, col1, col2, col3]
-  // First N are for vertical grid (right) - these are the row results
-  // Last N are for horizontal grid (below) - these are the column results
-  const { vertical: verticalExpected, horizontal: horizontalExpected } = getExpectedValues(puzzle.expected, N);
+  const { vertical: verticalExpected, horizontal: horizontalExpected } =
+    getExpectedValues(puzzle.expected, N);
 
   return (
     <div className={`${styles.puzzleContainer} ${styles.puzzlePageContainer}`}>

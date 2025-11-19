@@ -55,16 +55,47 @@ export default function LevelGameClient({ puzzleId, initialUiPuzzle, meta }) {
       setSubmitSuccess(null);
 
       try {
+        // limpiamos nulls de la solución
+        const cleanNumbers = Array.isArray(finalState.numbers)
+          ? finalState.numbers.filter((n) => n != null)
+          : [];
+
+        const movementsCount =
+          typeof finalState.movementsCount === "number"
+            ? finalState.movementsCount
+            : 0;
+
+        // 👇 importante: solution como objeto { solution: [...] }
         const res = await PuzzlesService.submitSolve(puzzleId, {
-          movements: finalState.movements || [],
+          movements: movementsCount,
           duration_ms: durationMs,
-          solution: {
-            numbers: finalState.numbers,
-          },
+          solution: { solution: cleanNumbers },
         });
 
-        if (!res.ok) {
-          setSubmitError(res.error || "Failed to submit solve.");
+        // Si tu wrapper devuelve { ok, error }, manejamos el error como string
+        if (res && res.ok === false) {
+          const err = res.error;
+          let msg = "Failed to submit solve.";
+
+          if (typeof err === "string") {
+            msg = err;
+          } else if (err && typeof err === "object") {
+            if (Array.isArray(err)) {
+              msg = err.map((e) => e.msg || String(e)).join("; ");
+            } else if (err.msg) {
+              msg = err.msg;
+            } else if (err.detail) {
+              if (Array.isArray(err.detail)) {
+                msg = err.detail
+                  .map((e) => e.msg || String(e))
+                  .join("; ");
+              } else {
+                msg = String(err.detail);
+              }
+            }
+          }
+
+          setSubmitError(msg);
           setIsSubmitting(false);
           return;
         }

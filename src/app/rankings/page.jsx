@@ -24,8 +24,7 @@ export default function RankingsPage() {
           Players Ranking
         </MenuButton>
 
-        {/* Levels Ranking (placeholder for later issue) */}
-        <MenuButton href="/levels/browse?sort=solves_desc">
+        <MenuButton href="/levels/browse?sort=likes&order=desc">
           Levels Ranking
         </MenuButton>
       </div>

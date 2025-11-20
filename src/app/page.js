@@ -11,6 +11,9 @@ export default function Home() {
       <MenuButton href="/levels/pae2">
         Level Select
       </MenuButton>
+      <MenuButton href="/rankings">
+        Rankings
+      </MenuButton>
     </HomePageLayout>
   );
 }

@@ -32,7 +32,7 @@ COPY --from=build /app/public ./public
 COPY --from=build /app/package.json ./package.json
 COPY --from=deps /app/node_modules ./node_modules
 
-EXPOSE 3000
+EXPOSE 80
 
 # Asegúrate de que en package.json tengas: "start": "next start"
 CMD ["npm", "start"]

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AuthService } from "@/services/auth.service";
 import { UsersService } from "@/services/users.service";
 import { useRouter } from "next/navigation";
+import { emitAuthChange } from "@/lib/auth-events";
 
 export default function UserProfileClient({
   userId: rawId,
@@ -39,7 +40,6 @@ export default function UserProfileClient({
   const [nameSaving, setNameSaving] = useState(false);
   const [nameError, setNameError] = useState("");
 
-  // arriba de todo, junto con los otros useState
   const [verifySending, setVerifySending] = useState(false);
   const [verifyMessage, setVerifyMessage] = useState("");
   const [verifyError, setVerifyError] = useState("");
@@ -177,6 +177,7 @@ export default function UserProfileClient({
 
       // limpiar el usuario autenticado en el estado
       setAuthUser(null);
+      emitAuthChange();
 
       // opcional: también podrías limpiar verifyMessage, etc.
       // setVerifyMessage("");

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AuthService } from "@/services/auth.service";
 import "../styles.css";
+import { emitAuthChange } from "@/lib/auth-events";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -46,6 +47,7 @@ export default function SignInPage() {
       return;
     }
 
+    emitAuthChange();
     setSuccessMsg("Signed in successfully! Redirecting…");
     setTimeout(() => router.push("/users/me"), 800);
   }

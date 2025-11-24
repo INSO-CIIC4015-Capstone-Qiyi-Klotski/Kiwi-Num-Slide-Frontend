@@ -15,7 +15,7 @@ jobs:
       EB_S3_BUCKET:   ${{ secrets.EB_S3_BUCKET }}
       ECR_REPO_URI:   ${{ secrets.ECR_REPO_URI }}    # p.ej. 9162....amazonaws.com/next-min
       IMAGE_TAG:      ${{ github.sha }}
-      CONTAINER_PORT: 80
+      CONTAINER_PORT: 3000
       NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
     steps:

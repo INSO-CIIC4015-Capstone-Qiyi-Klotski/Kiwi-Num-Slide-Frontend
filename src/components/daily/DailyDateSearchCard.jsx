@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { API_URL } from "@/lib/env";
+import { PuzzlesService } from "@/services/puzzles.service";
 
 const cardStyle = {
   border: "1px solid #e5e7eb",
@@ -73,7 +74,7 @@ export default function DailyDateSearchCard() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/puzzles/daily-puzzle/${value}`);
+      const res = await PuzzlesService.getDailyPuzzleByDate(value)
       if (!res.ok) {
         if (res.status === 404) {
           setError("No daily puzzle configured for this date.");
@@ -83,7 +84,7 @@ export default function DailyDateSearchCard() {
         return;
       }
 
-      const data = await res.json();
+      const data = res.data;
       if (data && data.puzzle) {
         const id = data.puzzle.id;
         const title =

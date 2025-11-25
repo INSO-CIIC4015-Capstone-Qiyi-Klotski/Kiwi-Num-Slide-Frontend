@@ -16,16 +16,6 @@ import { apiFetch } from "@/lib/http.js";
  * GET    /users/me/solves?limit=&cursor=
  */
 export const UsersService = {
-  /** GET /users/ssg-seed */
-  ssgSeed({ limit = 200 } = {}) {
-    const qs = new URLSearchParams({ limit: String(limit) }).toString();
-    return apiFetch(`/users/ssg-seed?${qs}`, { method: "GET" });
-  },
-
-  /** GET /users/me */
-  me() {
-    return apiFetch(`/users/me`, { method: "GET" });
-  },
 
   /** PATCH /users/me  -> body: { name?, avatar_key? } */
   patchMe({ name, avatar_key } = {}) {
@@ -58,42 +48,6 @@ export const UsersService = {
   unfollow(userId) {
     const id = Number(userId);
     return apiFetch(`/users/${id}/follow`, { method: "DELETE" });
-  },
-
-  /** GET /users/me/following?limit=&cursor= */
-  myFollowing({ limit = 20, cursor } = {}) {
-    const params = new URLSearchParams({ limit: String(limit) });
-    if (cursor) params.set("cursor", cursor);
-    return apiFetch(`/users/me/following?${params.toString()}`, {
-      method: "GET",
-    });
-  },
-
-  /** GET /users/me/followers?limit=&cursor= */
-  myFollowers({ limit = 20, cursor } = {}) {
-    const params = new URLSearchParams({ limit: String(limit) });
-    if (cursor) params.set("cursor", cursor);
-    return apiFetch(`/users/me/followers?${params.toString()}`, {
-      method: "GET",
-    });
-  },
-
-  /** GET /users/me/puzzle-likes?limit=&cursor= */
-  myPuzzleLikes({ limit = 20, cursor } = {}) {
-    const params = new URLSearchParams({ limit: String(limit) });
-    if (cursor) params.set("cursor", cursor);
-    return apiFetch(`/users/me/puzzle-likes?${params.toString()}`, {
-      method: "GET",
-    });
-  },
-
-  /** GET /users/me/solves?limit=&cursor= */
-  mySolves({ limit = 20, cursor } = {}) {
-    const params = new URLSearchParams({ limit: String(limit) });
-    if (cursor) params.set("cursor", cursor);
-    return apiFetch(`/users/me/solves?${params.toString()}`, {
-      method: "GET",
-    });
   },
 
   browse({
@@ -132,21 +86,21 @@ export const UsersService = {
   },
 
 
-  // GET /users/avatar-catalog -> { items: [{ key, url }] }
-getAvatarCatalog() {
-  return apiFetch("/users/avatar-catalog", {
-    method: "GET",
-    csrf: false,
-  });
-},
+    // GET /users/avatar-catalog -> { items: [{ key, url }] }
+  getAvatarCatalog() {
+    return apiFetch("/users/avatar-catalog", {
+      method: "GET",
+      csrf: false,
+    });
+  },
 
-// PATCH /users/me/avatar -> PublicUser
-updateMyAvatar(avatarKey) {
-  return apiFetch("/users/me/avatar", {
-    method: "PATCH",
-    body: JSON.stringify({ avatar_key: avatarKey }),
-  });
-},
+  // PATCH /users/me/avatar -> PublicUser
+  updateMyAvatar(avatarKey) {
+    return apiFetch("/users/me/avatar", {
+      method: "PATCH",
+      body: JSON.stringify({ avatar_key: avatarKey }),
+    });
+  },
 
 
 };

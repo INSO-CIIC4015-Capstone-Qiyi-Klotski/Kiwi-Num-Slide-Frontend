@@ -53,7 +53,7 @@ export const AuthService = {
       // sin body; el BE lee la cookie refresh_token
     });
   },
-
+  
   /** GET /auth/me -> UserOut (protegido por cookie) */
   me() {
     return apiFetch("/auth/me", { method: "GET" });

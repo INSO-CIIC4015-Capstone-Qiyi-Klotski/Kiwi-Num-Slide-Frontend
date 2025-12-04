@@ -38,6 +38,31 @@ export const UsersService = {
     });
   },
 
+    // user.service.js
+
+getPuzzleLikedByUser(userId, { limit = 20, cursor } = {}) {
+  const params = new URLSearchParams();
+
+  // siempre envía limit (por defecto 20)
+  if (limit != null) {
+    params.append("limit", String(limit));
+  }
+
+  // opcional: cursor para paginación
+  if (cursor) {
+    params.append("cursor", cursor);
+  }
+
+  const queryString = params.toString();
+  const url = `/users/${encodeURIComponent(userId)}/puzzles/likes${
+    queryString ? `?${queryString}` : ""
+  }`;
+
+  return apiFetch(url, {
+    method: "GET",
+  });
+},
+
   /** POST /users/:user_id/follow */
   follow(userId) {
     const id = Number(userId);

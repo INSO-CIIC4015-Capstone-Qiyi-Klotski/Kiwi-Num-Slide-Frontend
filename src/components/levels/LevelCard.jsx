@@ -1,5 +1,10 @@
 // src/components/levels/LevelCard.jsx
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import LikeButton from "../LikeButton";
+import { UsersService } from "@/services/users.service";
 
 const FALLBACK_AVATAR = "/images/kiwi.png";
 
@@ -76,38 +81,71 @@ export default function LevelCard({ level }) {
   const authorObj = level.author;
   const isGenerated = !authorObj;
 
-  // Default author name when the level is algorithm-generated
   const authorName = isGenerated
     ? "KiwiNumSlide"
     : authorObj.display_name ?? "Unknown author";
 
   const authorId = isGenerated ? null : authorObj.id;
 
-  // Avatar selection with fallback handling
-  const avatarUrl =
-    isGenerated
-      ? FALLBACK_AVATAR
-      : authorObj.avatar_url ?? FALLBACK_AVATAR;
+  const avatarUrl = isGenerated
+    ? FALLBACK_AVATAR
+    : authorObj.avatar_url ?? FALLBACK_AVATAR;
 
-  // Extract initials for potential fallback presentation
-  let authorInitials = "";
-  if (!isGenerated && authorName !== "Unknown author") {
-    const parts = authorName.split(/\s+/).filter(Boolean);
-    authorInitials = parts.slice(0, 2).map((p) => p[0]?.toUpperCase()).join("");
-  }
-
-  // Extract difficulty, size, likes and solves fields
   const difficulty = level.difficulty ?? null;
   const size = level.size ?? null;
 
   const likes = level.likes ?? level.likes_count ?? null;
   const solves = level.solves ?? level.solves_count ?? null;
+  const likesCount = likes ?? 0;
 
-  // Origin of the puzzle (user-generated vs algorithm)
   const generatedBy =
     level.generatedBy ??
     level.generated_by ??
     (isGenerated ? "algorithm" : "user");
+
+  // Estado de like para ESTE usuario en ESTE puzzle
+  const [likedByUser, setLikedByUser] = useState(
+    !!(level.liked ?? level.is_liked ?? false)
+  );
+  const puzzleId = level.id; // aquí usa el id numérico del puzzle
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchLikedPuzzles() {
+      // TODO: remplaza por tu user.id real desde auth/context
+      const userId = 61;
+      if (!userId || !puzzleId) return;
+
+      try {
+        const res = await UsersService.getPuzzleLikedByUser(userId);
+
+        // apiFetch puede devolver:
+        //  a) { ok, data: {...} }
+        //  b) el JSON directo { items: [...] }
+        const payload = res?.data ?? res;
+
+        if (!payload) return;
+
+        const items = Array.isArray(payload.items) ? payload.items : [];
+
+        // Chequea si el id de este puzzle está en la lista de puzzles likeados
+        const likedFlag = items.some((p) => p.id === puzzleId);
+
+        if (!cancelled) {
+          setLikedByUser(likedFlag);
+        }
+      } catch (error) {
+        console.error("Error fetching liked puzzles for user:", error);
+      }
+    }
+
+    fetchLikedPuzzles();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [puzzleId]);
 
   return (
     <article style={cardStyle}>
@@ -119,11 +157,7 @@ export default function LevelCard({ level }) {
       {/* Author section with avatar */}
       <div style={headerRow}>
         <div style={avatarWrapper}>
-          <img
-            src={avatarUrl}
-            alt={authorName}
-            style={avatarImgStyle}
-          />
+          <img src={avatarUrl} alt={authorName} style={avatarImgStyle} />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -141,17 +175,26 @@ export default function LevelCard({ level }) {
             )}
           </span>
 
-          {/* Difficulty and size metadata row */}
           <div style={metaRow}>
             {difficulty != null && <span>Difficulty: {difficulty}/5</span>}
-            {size != null && <span>• Size: {size}×{size}</span>}
+            {size != null && (
+              <span>
+                • Size: {size}×{size}
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Stats row: likes, solves, generation type */}
       <div style={metaRow}>
-        {likes != null && <span style={chip}>❤ {likes}</span>}
+        <LikeButton
+          puzzleId={id}
+          initialLiked={likedByUser}
+          initialCount={likesCount}
+          size="sm"
+        />
+
         {solves != null && <span style={chip}>✔ {solves}</span>}
         {generatedBy && (
           <span style={chip}>
@@ -159,7 +202,6 @@ export default function LevelCard({ level }) {
           </span>
         )}
 
-        {/* Operators */}
         {Array.isArray(level.operators) && level.operators.length > 0 && (
           <span style={chip}>
             {level.operators
@@ -182,7 +224,6 @@ export default function LevelCard({ level }) {
         )}
       </div>
 
-      {/* Call-to-action button */}
       <Link
         href={`/levels/${id}`}
         style={{

@@ -40,28 +40,86 @@ export const UsersService = {
 
     // user.service.js
 
-getPuzzleLikedByUser(userId, { limit = 20, cursor } = {}) {
-  const params = new URLSearchParams();
+  /** GET /users/:user_id/puzzles/likes?limit=&cursor= */
+  getPuzzleLikedByUser(userId, { limit = 20, cursor } = {}) {
+    const params = new URLSearchParams();
 
-  // siempre envía limit (por defecto 20)
-  if (limit != null) {
-    params.append("limit", String(limit));
-  }
+    // siempre envía limit (por defecto 20)
+    if (limit != null) {
+      params.append("limit", String(limit));
+    }
 
-  // opcional: cursor para paginación
-  if (cursor) {
-    params.append("cursor", cursor);
-  }
+    // opcional: cursor para paginación
+    if (cursor) {
+      params.append("cursor", cursor);
+    }
 
-  const queryString = params.toString();
-  const url = `/users/${encodeURIComponent(userId)}/puzzles/likes${
-    queryString ? `?${queryString}` : ""
-  }`;
+    const queryString = params.toString();
+    const url = `/users/${encodeURIComponent(userId)}/puzzles/likes${
+      queryString ? `?${queryString}` : ""
+    }`;
 
-  return apiFetch(url, {
-    method: "GET",
-  });
-},
+    return apiFetch(url, {
+      method: "GET",
+    });
+  },
+
+  /**
+   * Trae TODOS los ids de puzzles likeados por un user, paginando con cursor.
+   * Devuelve un array de strings con los ids de puzzle.
+   */
+  async getAllPuzzleLikedIds(userId, { maxPages = 5, limit = 100 } = {}) {
+    const allIds = new Set();
+    let cursor = null;
+
+    // El backend exige limit <= 100
+    const safeLimit = Math.min(limit ?? 100, 100);
+
+    for (let page = 0; page < maxPages; page++) {
+      const params = new URLSearchParams();
+      if (safeLimit != null) {
+        params.append("limit", String(safeLimit));
+      }
+      if (cursor) {
+        params.append("cursor", cursor);
+      }
+
+      const queryString = params.toString();
+      const url = `/users/${encodeURIComponent(userId)}/puzzles/likes${
+        queryString ? `?${queryString}` : ""
+      }`;
+
+      const res = await apiFetch(url, { method: "GET" });
+      const payload = res?.data ?? res;
+      const items = Array.isArray(payload?.items) ? payload.items : [];
+
+      for (const item of items) {
+        // Intentamos varias formas posibles de que venga el id del puzzle
+        const candidates = [
+          item.puzzle_id,
+          item.puzzleId,
+          item.id,
+          item.puzzle?.id,
+          item.puzzle?.puzzle_id,
+        ];
+
+        const found = candidates.find(
+          (v) => v !== null && v !== undefined
+        );
+
+        if (found !== undefined) {
+          allIds.add(String(found)); // normalizamos a string
+        }
+      }
+
+      const nextCursor = payload?.next_cursor ?? payload?.nextCursor ?? null;
+      if (!nextCursor) break;
+
+      cursor = nextCursor;
+    }
+
+    return Array.from(allIds);
+  },
 
   /** POST /users/:user_id/follow */
   follow(userId) {

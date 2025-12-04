@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PuzzlesService } from "@/services/puzzles.service";
+import { AuthService } from "@/services/auth.service";
+import { UsersService } from "@/services/users.service";
 import LevelCard from "./LevelCard";
 
 const gridStyle = {
@@ -48,6 +50,9 @@ export default function LevelsList() {
   const [cursorStack, setCursorStack] = useState([null]);
 
   const [reloadId, setReloadId] = useState(0);
+
+  // 👉 ids de puzzles que el usuario actual ha dado like (como strings)
+  const [likedPuzzleIds, setLikedPuzzleIds] = useState([]);
 
   // When filters change (not just the cursor), reset cursor history.
   useEffect(() => {
@@ -94,6 +99,7 @@ export default function LevelsList() {
     async function load() {
       setLoading(true);
       setError(null);
+      setLikedPuzzleIds([]); // resetea likes al recargar la lista
 
       try {
         const q = searchParams.get("q") || null;
@@ -114,6 +120,7 @@ export default function LevelsList() {
 
         const sort = mapSort(sortUi);
 
+        // 1) Cargamos los niveles
         const res = await PuzzlesService.browse({
           q,
           sort,
@@ -162,6 +169,28 @@ export default function LevelsList() {
 
         setLevels(items);
         setNextCursor(next);
+
+        // 2) Si hay usuario logueado, cargamos TODOS sus likes (paginando en el servicio)
+        try {
+          const statusRes = await AuthService.status();
+          if (!cancelled && statusRes.ok && statusRes.data?.user?.id) {
+            const userId = statusRes.data.user.id;
+
+            const ids = await UsersService.getAllPuzzleLikedIds(userId, {
+              maxPages: 5,
+              limit: 100,
+            });
+
+            if (!cancelled) {
+              setLikedPuzzleIds(ids); // ya son strings
+            }
+          }
+        } catch (e) {
+          if (!cancelled) {
+            console.error("Error fetching liked puzzles for user:", e);
+            setLikedPuzzleIds([]);
+          }
+        }
       } catch (e) {
         if (cancelled) return;
         setError(e);
@@ -261,6 +290,11 @@ export default function LevelsList() {
   const safeLevels = Array.isArray(levels) ? levels : [];
   const hasLevels = safeLevels.length > 0;
 
+  // Set con los ids de puzzles que el user ha likeado (todo en string)
+  const likedSet = new Set(
+    (likedPuzzleIds || []).map((id) => String(id))
+  );
+
   // Empty state when there are no levels and no loading in progress.
   if (!loading && !hasLevels) {
     return (
@@ -335,9 +369,27 @@ export default function LevelsList() {
       {hasLevels && renderPagination()}
 
       <div style={gridStyle}>
-        {safeLevels.map((lvl) => (
-          <LevelCard key={lvl.id ?? lvl.slug} level={lvl} />
-        ))}
+        {safeLevels.map((lvl) => {
+          const rawPuzzleId = lvl.id ?? lvl.slug;
+          const puzzleKey =
+            rawPuzzleId !== null && rawPuzzleId !== undefined
+              ? String(rawPuzzleId)
+              : null;
+
+          // priorizamos flags que ya vengan del backend,
+          // y si no, usamos el set de likes del usuario
+          const liked =
+            lvl.liked ??
+            lvl.is_liked ??
+            (puzzleKey != null && likedSet.has(puzzleKey));
+
+          return (
+            <LevelCard
+              key={puzzleKey ?? Math.random()}
+              level={{ ...lvl, liked }}
+            />
+          );
+        })}
       </div>
 
       {/* Bottom pagination controls (only rendered when there are results) */}

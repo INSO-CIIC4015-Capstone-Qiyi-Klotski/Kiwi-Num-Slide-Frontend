@@ -1,10 +1,8 @@
 // src/components/levels/LevelCard.jsx
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import LikeButton from "../LikeButton";
-import { UsersService } from "@/services/users.service";
 
 const FALLBACK_AVATAR = "/images/kiwi.png";
 
@@ -103,49 +101,8 @@ export default function LevelCard({ level }) {
     level.generated_by ??
     (isGenerated ? "algorithm" : "user");
 
-  // Estado de like para ESTE usuario en ESTE puzzle
-  const [likedByUser, setLikedByUser] = useState(
-    !!(level.liked ?? level.is_liked ?? false)
-  );
-  const puzzleId = level.id; // aquí usa el id numérico del puzzle
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchLikedPuzzles() {
-      // TODO: remplaza por tu user.id real desde auth/context
-      const userId = 61;
-      if (!userId || !puzzleId) return;
-
-      try {
-        const res = await UsersService.getPuzzleLikedByUser(userId);
-
-        // apiFetch puede devolver:
-        //  a) { ok, data: {...} }
-        //  b) el JSON directo { items: [...] }
-        const payload = res?.data ?? res;
-
-        if (!payload) return;
-
-        const items = Array.isArray(payload.items) ? payload.items : [];
-
-        // Chequea si el id de este puzzle está en la lista de puzzles likeados
-        const likedFlag = items.some((p) => p.id === puzzleId);
-
-        if (!cancelled) {
-          setLikedByUser(likedFlag);
-        }
-      } catch (error) {
-        console.error("Error fetching liked puzzles for user:", error);
-      }
-    }
-
-    fetchLikedPuzzles();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [puzzleId]);
+  // ✅ ya viene marcado desde LevelsList
+  const likedByUser = !!(level.liked ?? level.is_liked ?? false);
 
   return (
     <article style={cardStyle}>

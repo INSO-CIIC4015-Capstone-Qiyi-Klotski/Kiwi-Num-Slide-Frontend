@@ -119,13 +119,5 @@ getPuzzleLikedByUser(userId, { limit = 20, cursor } = {}) {
     });
   },
 
-  // PATCH /users/me/avatar -> PublicUser
-  updateMyAvatar(avatarKey) {
-    return apiFetch("/users/me/avatar", {
-      method: "PATCH",
-      body: JSON.stringify({ avatar_key: avatarKey }),
-    });
-  },
-
 
 };

@@ -313,7 +313,7 @@ export default function UserProfileClient({
     }
   }
 
-  // seleccionar un avatar y enviar PATCH /users/me/avatar
+  // seleccionar un avatar y enviar PATCH /users/me (avatar_key)
   async function handleSelectAvatar(item) {
     if (!user) return;
 
@@ -321,7 +321,7 @@ export default function UserProfileClient({
     setError("");
 
     try {
-      const res = await UsersService.updateMyAvatar(item.key);
+      const res = await UsersService.patchMe({ avatar_key: item.key });
       if (!res.ok) {
         setError(res.error || "Failed to update avatar.");
         return;

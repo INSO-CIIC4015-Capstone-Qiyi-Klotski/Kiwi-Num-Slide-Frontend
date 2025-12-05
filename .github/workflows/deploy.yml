@@ -3,6 +3,7 @@ name: Deploy FE (Docker/ECR) to Elastic Beanstalk
 on:
   push:
     branches: [ main ]
+  workflow_dispatch: {}
 
 jobs:
   deploy:

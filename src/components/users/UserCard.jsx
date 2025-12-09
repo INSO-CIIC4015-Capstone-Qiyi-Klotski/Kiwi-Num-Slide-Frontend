@@ -4,10 +4,10 @@ import Link from "next/link";
 const FALLBACK_AVATAR = "/images/kiwi.png";
 
 const cardStyle = {
-  border: "1px solid #e5e7eb",
+  border: "1px solid var(--border-color)",
   borderRadius: 12,
   padding: 14,
-  background: "#ffffff",
+  background: "var(--bg-secondary)",
   display: "flex",
   flexDirection: "column",
   gap: 8,
@@ -25,13 +25,13 @@ const avatarWrapper = {
   borderRadius: "999px",
   overflow: "hidden",
   flexShrink: 0,
-  background: "#e5e7eb",
+  background: "var(--bg-tertiary)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: 12,
   fontWeight: 600,
-  color: "#4b5563",
+  color: "var(--text-secondary)",
 };
 
 const avatarImgStyle = {
@@ -43,11 +43,12 @@ const avatarImgStyle = {
 const nameStyle = {
   fontSize: 16,
   fontWeight: 600,
+  color: "var(--text-primary)",
 };
 
 const metaRow = {
   fontSize: 12,
-  color: "#6b7280",
+  color: "var(--text-secondary)",
   display: "flex",
   flexWrap: "wrap",
   gap: 8,
@@ -57,7 +58,8 @@ const metaRow = {
 const chip = {
   padding: "2px 8px",
   borderRadius: 999,
-  background: "#f3f4f6",
+  background: "var(--bg-tertiary)",
+  color: "var(--text-primary)",
   fontSize: 11,
 };
 
@@ -106,7 +108,9 @@ export default function UserCard({ user }) {
           fontSize: 13,
           padding: "6px 10px",
           borderRadius: 999,
-          border: "1px solid #d1d5db",
+          border: "1px solid var(--border-color)",
+          background: "var(--bg-tertiary)",
+          color: "var(--text-primary)",
           marginTop: 6,
         }}
       >

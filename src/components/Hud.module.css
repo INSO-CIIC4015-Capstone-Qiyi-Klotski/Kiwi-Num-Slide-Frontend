@@ -10,9 +10,9 @@
     border: 0;
     font-size: 26px;
     cursor: pointer;
-    color: #111;
+    color: var(--text-on-accent);
     text-decoration: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease, color 0.2s ease;
     padding: 4px;
   }
   
@@ -88,11 +88,12 @@
     left: 14px; bottom: 14px;
     width: 48px; height: 48px;
     border-radius: 999px;
-    background: #111; color: #fff;
+    background: var(--text-primary); 
+    color: var(--bg-primary);
     display: grid; place-items: center;
     font-size: 22px; text-decoration: none;
-    box-shadow: 0 8px 16px rgba(0,0,0,.15);
-    transition: transform .1s ease;
+    box-shadow: 0 8px 16px var(--shadow-md);
+    transition: transform .1s ease, background 0.2s ease;
   }
   .backFab:hover { transform: translateY(-1px); }
   .backFab:active { transform: translateY(1px); }

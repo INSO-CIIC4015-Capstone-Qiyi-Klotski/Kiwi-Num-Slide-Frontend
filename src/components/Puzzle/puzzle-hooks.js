@@ -1,19 +1,37 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { findEmptyPosition, swapTiles, canMove, getNumbersGrid } from './puzzle-utils';
+import { loadSettings, onSettingsChange, DEFAULT_KEY_BINDINGS } from '@/lib/settings-store';
 
 /**
- * Hook for handling keyboard navigation
+ * Hook for handling keyboard navigation with custom key bindings
  */
 export const useKeyboardNavigation = (
   puzzle,
   setPuzzle,    
   puzzleRef
 ) => {
+  const [keyBindings, setKeyBindings] = useState(DEFAULT_KEY_BINDINGS);
+
+  // Load key bindings on mount and listen for changes
+  useEffect(() => {
+    const settings = loadSettings();
+    setKeyBindings(settings.keyBindings);
+
+    const unsubscribe = onSettingsChange((newSettings) => {
+      setKeyBindings(newSettings.keyBindings);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const handleKeyDown = useCallback((e) => {
     const { N, numbers } = puzzle;
     
-    // Prevent default behavior for arrow keys to stop page scrolling (To allow Puzzle interaction instead)
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    // Get the action for this key
+    const boundKeys = Object.values(keyBindings);
+    
+    // Prevent default behavior for bound keys to stop page scrolling
+    if (boundKeys.includes(e.key)) {
       e.preventDefault();
     }
 
@@ -24,33 +42,29 @@ export const useKeyboardNavigation = (
     let targetRow = emptyRow;
     let targetCol = emptyCol;
 
-    switch (e.key) {
-      case 'ArrowUp':
-        if (emptyRow < N - 1) {
-          targetRow = emptyRow + 1;
-          targetCol = emptyCol;
-        }
-        break;
-      case 'ArrowDown':
-        if (emptyRow > 0) {
-          targetRow = emptyRow - 1;
-          targetCol = emptyCol;
-        }
-        break;
-      case 'ArrowLeft':
-        if (emptyCol < N - 1) {
-          targetRow = emptyRow;
-          targetCol = emptyCol + 1;
-        }
-        break;
-      case 'ArrowRight':
-        if (emptyCol > 0) {
-          targetRow = emptyRow;
-          targetCol = emptyCol - 1;
-        }
-        break;
-      default:
-        return;
+    // Check which action this key maps to
+    if (e.key === keyBindings.moveUp) {
+      if (emptyRow < N - 1) {
+        targetRow = emptyRow + 1;
+        targetCol = emptyCol;
+      }
+    } else if (e.key === keyBindings.moveDown) {
+      if (emptyRow > 0) {
+        targetRow = emptyRow - 1;
+        targetCol = emptyCol;
+      }
+    } else if (e.key === keyBindings.moveLeft) {
+      if (emptyCol < N - 1) {
+        targetRow = emptyRow;
+        targetCol = emptyCol + 1;
+      }
+    } else if (e.key === keyBindings.moveRight) {
+      if (emptyCol > 0) {
+        targetRow = emptyRow;
+        targetCol = emptyCol - 1;
+      }
+    } else {
+      return;
     }
 
     if (targetRow !== emptyRow || targetCol !== emptyCol) {
@@ -59,7 +73,7 @@ export const useKeyboardNavigation = (
         setPuzzle({ ...puzzle, numbers: newNumbers });
       }
     }
-  }, [puzzle, setPuzzle]);
+  }, [puzzle, setPuzzle, keyBindings]);
 
   useEffect(() => {
     const puzzleElement = puzzleRef.current;

@@ -4,10 +4,10 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const boxStyle = {
-  border: "1px solid #e5e7eb",
+  border: "1px solid var(--border-color)",
   borderRadius: 12,
   padding: 16,
-  background: "#f9fafb",
+  background: "var(--bg-secondary)",
   display: "flex",
   flexDirection: "column",
   gap: 12,
@@ -22,12 +22,15 @@ const rowStyle = {
 const labelStyle = {
   fontSize: 13,
   fontWeight: 600,
+  color: "var(--text-primary)",
 };
 
 const inputStyle = {
   padding: "6px 10px",
   borderRadius: 8,
-  border: "1px solid #d1d5db",
+  border: "1px solid var(--border-color)",
+  background: "var(--bg-tertiary)",
+  color: "var(--text-primary)",
   fontSize: 14,
 };
 
@@ -37,7 +40,8 @@ const chipStyle = {
   gap: 6,
   padding: "2px 8px",
   borderRadius: 999,
-  background: "#e5e7eb",
+  background: "var(--bg-tertiary)",
+  color: "var(--text-primary)",
   fontSize: 12,
 };
 
@@ -155,8 +159,9 @@ export default function UsersFilters() {
             style={{
               padding: "8px 12px",
               borderRadius: 8,
-              border: "1px solid #d1d5db",
-              background: "#fff",
+              border: "1px solid var(--border-color)",
+              background: "var(--bg-tertiary)",
+              color: "var(--text-primary)",
               cursor: "pointer",
               fontSize: 13,
             }}

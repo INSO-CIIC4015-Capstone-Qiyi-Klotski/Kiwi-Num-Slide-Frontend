@@ -155,8 +155,27 @@ export default function TargetStep({
 
   return (
     <section style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700 }}>4. Target sums</h2>
-      <p style={{ fontSize: 14, color: "#4b5563" }}>
+      <h2 style={{ 
+        fontSize: 18, 
+        fontWeight: 700,
+        color: "var(--text-primary)",
+        background: "var(--bg-secondary)",
+        padding: "10px 16px",
+        borderRadius: 12,
+        border: "1px solid var(--border-color)",
+        margin: 0,
+        width: "fit-content",
+      }}>4. Target sums</h2>
+      <p style={{ 
+        fontSize: 14, 
+        color: "var(--text-primary)", 
+        background: "var(--bg-secondary)",
+        padding: "10px 16px",
+        borderRadius: 12,
+        border: "1px solid var(--border-color)",
+        margin: 0,
+        width: "fit-content",
+      }}>
         Use the same sliding mechanics as the game to arrange the board. When
         you&apos;re happy, click &ldquo;Set as target&rdquo; to freeze the row
         and column results. The empty tile must be in the bottom-right corner.

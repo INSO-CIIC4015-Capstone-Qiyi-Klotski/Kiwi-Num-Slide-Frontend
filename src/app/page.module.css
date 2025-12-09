@@ -215,9 +215,10 @@
     position: relative;
     flex: 1;
     background:
-      repeating-linear-gradient(0deg, #e9d5ff 0 2px, transparent 2px 68px),
-      repeating-linear-gradient(90deg, #e9d5ff 0 2px, transparent 2px 68px);
+      repeating-linear-gradient(0deg, var(--grid-line, #e9d5ff) 0 2px, transparent 2px 68px),
+      repeating-linear-gradient(90deg, var(--grid-line, #e9d5ff) 0 2px, transparent 2px 68px);
     overflow: auto;
+    transition: background 0.2s ease;
   }
   
   /* ========================================
@@ -236,8 +237,8 @@
     border: 0;
     font-size: 26px;
     cursor: pointer;
-    color: #111;
-    transition: opacity 0.2s ease;
+    color: var(--text-primary);
+    transition: opacity 0.2s ease, color 0.2s ease;
   }
   
   .iconBtn:hover {
@@ -283,13 +284,14 @@
     font-weight: 800;
     font-size: var(--title-font-size, clamp(32px, 8vw, 120px));
     line-height: 1;
-    color: #111;
-    text-shadow: 0 3px 0 #fff;
+    color: var(--text-primary);
+    text-shadow: 0 3px 0 var(--bg-secondary);
     margin: 0;
     letter-spacing: 0.1em;
     word-wrap: break-word;
     overflow-wrap: break-word;
     hyphens: auto;
+    transition: color 0.2s ease;
   }
   
   /* ========================================
@@ -310,30 +312,30 @@
     position: relative;
     width: 100%;
     padding: clamp(24px, 5vw, 32px) clamp(28px, 6vw, 40px);
-    background: #fff;
-    border: clamp(5px, 1.2vw, 8px) solid #111;
+    background: var(--bg-secondary);
+    border: clamp(5px, 1.2vw, 8px) solid var(--text-primary);
     border-radius: clamp(14px, 3vw, 20px);
     text-decoration: none;
-    color: #111;
+    color: var(--text-primary);
     font-size: clamp(24px, 5vw, 48px);
     font-weight: 800;
     font-style: italic;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 clamp(10px, 2.5vw, 16px) 0 #f59ac7;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    box-shadow: 0 clamp(10px, 2.5vw, 16px) 0 var(--accent);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease, color 0.2s ease;
     cursor: pointer;
   }
   
   .btn:hover { 
     transform: translateY(1px); 
-    box-shadow: 0 clamp(6px, 1.5vw, 10px) 0 #f59ac7; 
+    box-shadow: 0 clamp(6px, 1.5vw, 10px) 0 var(--accent); 
   }
   
   .btn:active { 
     transform: translateY(3px); 
-    box-shadow: 0 clamp(4px, 1vw, 7px) 0 #f59ac7; 
+    box-shadow: 0 clamp(4px, 1vw, 7px) 0 var(--accent); 
   }
   
   /* Decorative dashes */
@@ -344,7 +346,7 @@
     left: 8%;
     right: 8%;
     height: 6px;
-    background: repeating-linear-gradient(90deg, #111 0 34px, transparent 34px 56px);
+    background: repeating-linear-gradient(90deg, var(--text-primary) 0 34px, transparent 34px 56px);
     border-radius: 4px;
   }
   

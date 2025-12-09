@@ -2,7 +2,7 @@
 
 .auth-page {
   min-height: calc(100vh - 56px); /* deja espacio para el header rosa */
-  background: #fdf5ff;
+  background: var(--bg-primary);
   padding: 32px 16px;
   display: flex;
   justify-content: center;
@@ -15,22 +15,23 @@
 }
 
 .auth-card {
-  background: #ffffff;
+  background: var(--bg-secondary);
   border-radius: 18px;
   padding: 24px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.09);
-  border: 1px solid #f1e4ff;
+  box-shadow: 0 18px 45px var(--shadow-md);
+  border: 1px solid var(--border-color);
 }
 
 .auth-title {
   font-size: 28px;
   font-weight: 900;
   margin: 0 0 8px 0;
+  color: var(--text-primary);
 }
 
 .auth-subtitle {
   margin: 0 0 20px 0;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -49,37 +50,39 @@
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--text-primary);
 }
 
 .auth-input {
   padding: 8px 11px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   font-size: 14px;
   outline: none;
-  background-color: #f9fafb;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
   width: 100%;
 }
 
 .auth-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1);
-  background-color: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  background-color: var(--bg-secondary);
 }
 
 .auth-input-error {
-  border-color: #f97373;
+  border-color: var(--danger);
 }
 
 .auth-helper {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
 .auth-error {
   font-size: 12px;
-  color: #b91c1c;
+  color: var(--danger);
   margin-top: 4px;
 }
 
@@ -99,8 +102,8 @@
   padding: 10px 14px;
   border-radius: 999px;
   border: none;
-  background: #111827;
-  color: #ffffff;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
@@ -116,11 +119,11 @@
   margin-top: 18px;
   font-size: 13px;
   text-align: center;
-  color: #4b5563;
+  color: var(--text-secondary);
 }
 
 .auth-link {
-  color: #1d4ed8;
+  color: var(--accent);
   text-decoration: underline;
   font-weight: 600;
 }

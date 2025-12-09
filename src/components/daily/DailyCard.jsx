@@ -4,10 +4,10 @@ import Link from "next/link";
 const FALLBACK_AVATAR = "/images/kiwi.png";
 
 const wrapperStyle = {
-  border: "1px solid #e5e7eb",
+  border: "1px solid var(--border-color)",
   borderRadius: 16,
   padding: 24,
-  background: "#ffffff",
+  background: "var(--bg-secondary)",
   display: "flex",
   flexDirection: "column",
   gap: 16,
@@ -17,7 +17,7 @@ const wrapperStyle = {
 const eyebrowStyle = {
   fontSize: 12,
   fontWeight: 600,
-  color: "#6b7280",
+  color: "var(--text-secondary)",
   textTransform: "uppercase",
   letterSpacing: "0.08em",
 };
@@ -25,17 +25,18 @@ const eyebrowStyle = {
 const titleStyle = {
   fontSize: 26,
   fontWeight: 800,
+  color: "var(--text-primary)",
 };
 
 const dateStyle = {
   fontSize: 12,
-  color: "#6b7280",
+  color: "var(--text-secondary)",
   marginTop: 4,
 };
 
 const subtitleStyle = {
   fontSize: 13,
-  color: "#6b7280",
+  color: "var(--text-secondary)",
   marginTop: 8,
 };
 
@@ -44,12 +45,14 @@ const chipsRow = {
   flexWrap: "wrap",
   gap: 8,
   fontSize: 12,
+  color: "var(--text-primary)",
 };
 
 const chip = {
   padding: "4px 10px",
   borderRadius: 999,
-  background: "#f3f4f6",
+  background: "var(--bg-tertiary)",
+  color: "var(--text-primary)",
 };
 
 const authorRow = {
@@ -57,6 +60,7 @@ const authorRow = {
   alignItems: "center",
   gap: 10,
   marginTop: 8,
+  color: "var(--text-primary)",
 };
 
 const avatarWrapper = {
@@ -65,7 +69,7 @@ const avatarWrapper = {
   borderRadius: "999px",
   overflow: "hidden",
   flexShrink: 0,
-  background: "#e5e7eb",
+  background: "var(--bg-tertiary)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -98,7 +102,7 @@ const playButtonStyle = {
 
 const secondaryLinkStyle = {
   fontSize: 13,
-  color: "#4b5563",
+  color: "var(--text-secondary)",
   textDecoration: "underline",
 };
 

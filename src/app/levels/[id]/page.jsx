@@ -43,7 +43,7 @@ async function getPuzzleById(id) {
  * SEO dinámico para /levels/[id]
  */
 export async function generateMetadata({ params }) {
-  const rawId = params?.id;
+  const { id: rawId } = await params;
   const id = typeof rawId === "string" ? rawId : "";
 
   if (!id || !/^\d+$/.test(id)) {
@@ -72,7 +72,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function LevelPage({ params }) {
-  const rawId = params?.id;
+  const { id: rawId } = await params;
   const id = typeof rawId === "string" ? rawId : "";
 
   if (!id || !/^\d+$/.test(id)) {

@@ -1,0 +1,371 @@
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+/* Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sectionTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  margin: 0;
+  padding-left: 0.5rem;
+}
+
+/* Card Group */
+.cardGroup {
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px var(--shadow);
+  transition: background-color 0.2s ease;
+}
+
+/* Setting Row (for toggle) */
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.settingRow:last-child {
+  border-bottom: none;
+}
+
+.settingInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settingIcon {
+  font-size: 1.25rem;
+  width: 28px;
+  text-align: center;
+}
+
+.settingLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Toggle Switch */
+.toggle {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  background: var(--bg-tertiary);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding: 0;
+}
+
+.toggle:hover {
+  background: #d1d5db;
+}
+
+.toggleOn {
+  background: var(--accent);
+}
+
+.toggleOn:hover {
+  background: var(--accent-hover);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.toggleOn .toggleThumb {
+  transform: translateX(20px);
+}
+
+/* Key Binding Row */
+.keyBindingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.keyAction {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.keyButton {
+  min-width: 80px;
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--text-primary);
+}
+
+.keyButton:hover {
+  border-color: var(--accent);
+}
+
+.keyButtonEditing {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.keyDisplay {
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.pressKey {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Reset Button */
+.resetBtn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.resetBtn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* User Card */
+.userCard {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.userLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.userEmail {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+/* Guest Card */
+.guestCard {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.guestCard p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Setting Links */
+.settingLink {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.15s ease;
+}
+
+.settingLink:last-child {
+  border-bottom: none;
+}
+
+.settingLink:hover {
+  background: var(--bg-tertiary);
+}
+
+.settingLink:active {
+  background: var(--bg-tertiary);
+}
+
+.linkIcon {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+  width: 28px;
+  text-align: center;
+}
+
+.linkText {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.linkArrow {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.settingLink:hover .linkArrow {
+  transform: translateX(3px);
+  color: var(--accent);
+}
+
+/* Logout Button */
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: none;
+  background: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.logoutBtn:hover {
+  background: var(--danger-bg);
+}
+
+.logoutBtn:active {
+  background: var(--danger-bg);
+}
+
+.logoutBtn .linkIcon {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+  width: 28px;
+  text-align: center;
+}
+
+.logoutBtn .linkText {
+  font-weight: 500;
+}
+
+/* About Card */
+.aboutCard {
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+}
+
+.appName {
+  font-family: var(--font-kiwi), sans-serif;
+  font-size: 1.5rem;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.appVersion {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.appDesc {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+    gap: 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 0.8rem;
+  }
+
+  .settingRow,
+  .keyBindingRow,
+  .settingLink,
+  .logoutBtn,
+  .resetBtn,
+  .userCard,
+  .guestCard {
+    padding: 0.875rem 1rem;
+  }
+
+  .linkIcon,
+  .logoutBtn .linkIcon,
+  .settingIcon {
+    font-size: 1.1rem;
+    width: 24px;
+  }
+
+  .linkText,
+  .logoutBtn .linkText,
+  .settingLabel {
+    font-size: 0.95rem;
+  }
+
+  .keyButton {
+    min-width: 70px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}

@@ -16,10 +16,10 @@ const gridStyle = {
 };
 
 const skeletonCard = {
-  border: "1px solid #e5e7eb",
+  border: "1px solid var(--border-color)",
   borderRadius: 12,
   padding: 16,
-  background: "#f9fafb",
+  background: "var(--bg-secondary)",
   height: 120,
   animation: "pulse 1.5s ease-in-out infinite",
 };
@@ -256,13 +256,13 @@ export default function LevelsList() {
   if (error) {
     return (
       <section aria-label="Error loading levels" style={{ textAlign: "center" }}>
-        <p style={{ color: "#b91c1c", marginBottom: 8 }}>
+        <p style={{ color: "var(--danger)", marginBottom: 8 }}>
           An error occurred while loading levels.
         </p>
         <p
           style={{
             fontSize: 12,
-            color: "#6b7280",
+            color: "var(--text-secondary)",
             marginBottom: 12,
             wordBreak: "break-word",
           }}
@@ -275,8 +275,9 @@ export default function LevelsList() {
           style={{
             padding: "8px 12px",
             borderRadius: 8,
-            border: "1px solid #d1d5db",
-            background: "#fff",
+            border: "1px solid var(--border-color)",
+            background: "var(--bg-secondary)",
+            color: "var(--text-primary)",
             cursor: "pointer",
             fontSize: 13,
           }}
@@ -298,7 +299,7 @@ export default function LevelsList() {
   // Empty state when there are no levels and no loading in progress.
   if (!loading && !hasLevels) {
     return (
-      <section aria-label="No levels found" style={{ textAlign: "center" }}>
+      <section aria-label="No levels found" style={{ textAlign: "center", color: "var(--text-primary)" }}>
         <p style={{ marginBottom: 8 }}>
           No levels were found with the current filters.
         </p>
@@ -307,8 +308,9 @@ export default function LevelsList() {
           style={{
             padding: "8px 12px",
             borderRadius: 8,
-            border: "1px solid #d1d5db",
-            background: "#fff",
+            border: "1px solid var(--border-color)",
+            background: "var(--bg-secondary)",
+            color: "var(--text-primary)",
             fontSize: 13,
           }}
         >
@@ -336,10 +338,12 @@ export default function LevelsList() {
         style={{
           padding: "8px 12px",
           borderRadius: 8,
-          border: "1px solid #d1d5db",
-          background: canGoPrev ? "#fff" : "#f3f4f6",
+          border: "1px solid var(--border-color)",
+          background: canGoPrev ? "var(--bg-secondary)" : "var(--bg-tertiary)",
+          color: "var(--text-primary)",
           cursor: canGoPrev ? "pointer" : "default",
           fontSize: 13,
+          opacity: canGoPrev ? 1 : 0.6,
         }}
       >
         ← Previous
@@ -352,10 +356,12 @@ export default function LevelsList() {
         style={{
           padding: "8px 12px",
           borderRadius: 8,
-          border: "1px solid #d1d5db",
-          background: nextCursor ? "#fff" : "#f3f4f6",
+          border: "1px solid var(--border-color)",
+          background: nextCursor ? "var(--bg-secondary)" : "var(--bg-tertiary)",
+          color: "var(--text-primary)",
           cursor: nextCursor ? "pointer" : "default",
           fontSize: 13,
+          opacity: nextCursor ? 1 : 0.6,
         }}
       >
         Next →

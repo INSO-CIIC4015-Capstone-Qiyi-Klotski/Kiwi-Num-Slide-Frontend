@@ -105,9 +105,9 @@ export default function Hud() {
 
   return (
     <div className={styles.hud}>
-      <button className={styles.iconBtn} aria-label="settings" title="Settings">
+      <Link href="/settings" className={styles.iconBtn} aria-label="settings" title="Settings">
         ⚙️
-      </button>
+      </Link>
 
       <Link href="/" className={styles.iconBtn} title="Home">
         ฅ^•ﻌ•^ฅ

@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Bungee } from "next/font/google";
 import "./globals.css";
 import Hud from "../components/Hud";
+import DarkModeInit from "../components/DarkModeInit";
 
 const geistSans = Geist({ 
   variable: "--font-geist-sans", 
@@ -25,11 +26,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${kiwiBrand.variable}`}
         suppressHydrationWarning={true}
       >
+        <DarkModeInit />
         <header className="site-header">
           <Hud />
         </header>

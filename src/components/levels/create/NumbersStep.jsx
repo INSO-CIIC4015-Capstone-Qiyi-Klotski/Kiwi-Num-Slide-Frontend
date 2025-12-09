@@ -41,8 +41,27 @@ export default function NumbersStep({ size, numbers, onChange, onPrev, onNext })
 
   return (
     <section style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700 }}>2. Initial state — numbers</h2>
-      <p style={{ fontSize: 14, color: "#4b5563" }}>
+      <h2 style={{ 
+        fontSize: 18, 
+        fontWeight: 700,
+        color: "var(--text-primary)",
+        background: "var(--bg-secondary)",
+        padding: "10px 16px",
+        borderRadius: 12,
+        border: "1px solid var(--border-color)",
+        margin: 0,
+        width: "fit-content",
+      }}>2. Initial state — numbers</h2>
+      <p style={{ 
+        fontSize: 14, 
+        color: "var(--text-primary)", 
+        background: "var(--bg-secondary)",
+        padding: "10px 16px",
+        borderRadius: 12,
+        border: "1px solid var(--border-color)",
+        margin: 0,
+        width: "fit-content",
+      }}>
         Click any tile (except the blank) to assign a value from 1 to 9. All tiles must be set
         before continuing.
       </p>

@@ -131,9 +131,9 @@ export default function LevelCreateClient() {
                 style={{
                   padding: "4px 10px",
                   borderRadius: 999,
-                  border: "1px solid #d1d5db",
-                  background: active ? "#111827" : "#f9fafb",
-                  color: active ? "#f9fafb" : "#111827",
+                  border: "1px solid var(--border-color)",
+                  background: active ? "var(--text-primary)" : "var(--bg-secondary)",
+                  color: active ? "var(--bg-primary)" : "var(--text-primary)",
                 }}
               >
                 {s}. {label}

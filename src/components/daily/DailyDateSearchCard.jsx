@@ -7,10 +7,10 @@ import { API_URL } from "@/lib/env";
 import { PuzzlesService } from "@/services/puzzles.service";
 
 const cardStyle = {
-  border: "1px solid #e5e7eb",
+  border: "1px solid var(--border-color)",
   borderRadius: 16,
   padding: 18,
-  background: "#ffffff",
+  background: "var(--bg-secondary)",
   display: "flex",
   flexDirection: "column",
   gap: 12,
@@ -19,29 +19,33 @@ const cardStyle = {
 const titleStyle = {
   fontSize: 15,
   fontWeight: 600,
+  color: "var(--text-primary)",
 };
 
 const helperStyle = {
   fontSize: 12,
-  color: "#6b7280",
+  color: "var(--text-secondary)",
 };
 
 const inputStyle = {
   width: "100%",
   padding: "8px 10px",
   borderRadius: 8,
-  border: "1px solid #d1d5db",
+  border: "1px solid var(--border-color)",
   fontSize: 13,
+  background: "var(--bg-secondary)",
+  color: "var(--text-primary)",
 };
 
 const resultTitleStyle = {
   fontSize: 13,
   marginTop: 4,
+  color: "var(--text-primary)",
 };
 
 const errorStyle = {
   fontSize: 12,
-  color: "#b91c1c",
+  color: "var(--danger)",
 };
 
 const linkButtonStyle = {
@@ -50,8 +54,10 @@ const linkButtonStyle = {
   fontSize: 13,
   padding: "6px 10px",
   borderRadius: 999,
-  border: "1px solid #4b5563",
+  border: "1px solid var(--border-color)",
   textDecoration: "none",
+  background: "var(--bg-secondary)",
+  color: "var(--text-primary)",
 };
 
 export default function DailyDateSearchCard() {
@@ -74,7 +80,7 @@ export default function DailyDateSearchCard() {
 
     setLoading(true);
     try {
-      const res = await PuzzlesService.getDailyPuzzleByDate(value)
+      const res = await PuzzlesService.getDailyPuzzleByDate(value);
       if (!res.ok) {
         if (res.status === 404) {
           setError("No daily puzzle configured for this date.");
@@ -87,8 +93,7 @@ export default function DailyDateSearchCard() {
       const data = res.data;
       if (data && data.puzzle) {
         const id = data.puzzle.id;
-        const title =
-          data.puzzle.title || `Puzzle #${id}`;
+        const title = data.puzzle.title || `Puzzle #${id}`;
         setResult({ id, title });
       } else {
         setError("No daily puzzle configured for this date.");
@@ -101,18 +106,17 @@ export default function DailyDateSearchCard() {
     }
   }
 
-  const queryHref =
-    result?.title
-      ? `/levels/browse?q=${encodeURIComponent(result.title)}`
-      : null;
+  const queryHref = result?.title
+    ? `/levels/browse?q=${encodeURIComponent(result.title)}`
+    : null;
 
   return (
     <aside style={cardStyle}>
       <div>
         <div style={titleStyle}>Find a past daily</div>
         <p style={helperStyle}>
-          Pick a date to look up that day&apos;s daily puzzle and search
-          for it in the level browser.
+          Pick a date to look up that day&apos;s daily puzzle and search for it
+          in the level browser.
         </p>
       </div>
 
@@ -125,9 +129,7 @@ export default function DailyDateSearchCard() {
         style={inputStyle}
       />
 
-      {loading && (
-        <div style={helperStyle}>Loading daily puzzle…</div>
-      )}
+      {loading && <div style={helperStyle}>Loading daily puzzle…</div>}
 
       {!loading && result && (
         <div>
@@ -142,9 +144,7 @@ export default function DailyDateSearchCard() {
         </div>
       )}
 
-      {!loading && error && (
-        <div style={errorStyle}>{error}</div>
-      )}
+      {!loading && error && <div style={errorStyle}>{error}</div>}
     </aside>
   );
 }

@@ -4,8 +4,27 @@
 export default function SizeStep({ size, onChange, onNext }) {
   return (
     <section style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700 }}>1. Choose board size</h2>
-      <p style={{ fontSize: 14, color: "#4b5563" }}>
+      <h2 style={{ 
+        fontSize: 18, 
+        fontWeight: 700,
+        color: "var(--text-primary)",
+        background: "var(--bg-secondary)",
+        padding: "10px 16px",
+        borderRadius: 12,
+        border: "1px solid var(--border-color)",
+        margin: 0,
+        width: "fit-content",
+      }}>1. Choose board size</h2>
+      <p style={{ 
+        fontSize: 14, 
+        color: "var(--text-primary)", 
+        background: "var(--bg-secondary)",
+        padding: "10px 16px",
+        borderRadius: 12,
+        border: "1px solid var(--border-color)",
+        margin: 0,
+        width: "fit-content",
+      }}>
         Select the grid size for your level. Bigger boards usually mean harder puzzles.
       </p>
 

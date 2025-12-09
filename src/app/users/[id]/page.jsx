@@ -46,7 +46,7 @@ async function getCreatedPuzzles(id) {
  *   "Janiel Núñez - Profile | KiwiNumSlide"
  */
 export async function generateMetadata({ params }) {
-  const rawId = params?.id;
+  const { id: rawId } = await params;
   const id = typeof rawId === "string" ? rawId : "";
 
   // Si el id es inválido, título genérico de error
@@ -75,7 +75,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function UserProfilePage({ params }) {
-  const rawId = params?.id;
+  const { id: rawId } = await params;
   const id = typeof rawId === "string" ? rawId : "";
 
   if (!id || !/^\d+$/.test(id)) {

@@ -26,13 +26,16 @@ export default function LikeButton({
 
   const onClick = useCallback(async () => {
     setErr("");
-    if (liked) return; // evita doble click
     if (!puzzleId && puzzleId !== 0) return;
+    if (loading) return;
 
     try {
       setLoading(true);
 
-      const res = await PuzzlesService.like(puzzleId);
+      // Toggle: if already liked, unlike; otherwise like
+      const res = liked
+        ? await PuzzlesService.unlike(puzzleId)
+        : await PuzzlesService.like(puzzleId);
 
       if (!res?.ok) {
         const status = res?.status ?? res?.data?.status ?? res?.code;
@@ -44,22 +47,32 @@ export default function LikeButton({
           router.push(`/auth/sign-in?next=${encodeURIComponent(next)}`);
           return;
         }
-        setErr(res?.error || "Failed to like puzzle.");
+        setErr(res?.error || (liked ? "Failed to unlike." : "Failed to like."));
         return;
       }
 
       const changed = !!res?.data?.changed;
       if (changed) {
-        setLiked(true);
-        setCount((c) => c + 1);
+        if (liked) {
+          // Was liked, now unliked
+          setLiked(false);
+          setCount((c) => Math.max(0, c - 1));
+        } else {
+          // Was not liked, now liked
+          setLiked(true);
+          setCount((c) => c + 1);
+        }
+
+        // Force a refresh of the current route to get fresh data
+        router.refresh();
       }
     } catch {
-      setErr("Failed to like puzzle.");
+      setErr(liked ? "Failed to unlike." : "Failed to like.");
     } finally {
       setLoading(false);
       if (err) setTimeout(() => setErr(""), 2500);
     }
-  }, [liked, puzzleId, err, router]);
+  }, [liked, loading, puzzleId, err, router]);
 
   const sizePx = size === "sm" ? 26 : 32;
   const fontSize = size === "sm" ? 12 : 14;
@@ -68,10 +81,10 @@ export default function LikeButton({
     <button
       type="button"
       onClick={onClick}
-      disabled={loading || liked}
+      disabled={loading}
       aria-pressed={liked}
-      aria-label={liked ? "Liked" : "Like this puzzle"}
-      title={liked ? "You like this puzzle" : "Like"}
+      aria-label={liked ? "Unlike this puzzle" : "Like this puzzle"}
+      title={liked ? "Click to unlike" : "Click to like"}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -82,7 +95,7 @@ export default function LikeButton({
         color: liked ? "#b91c1c" : "#111111",
         padding: "4px 10px",
         boxShadow: "0 2px 0 rgba(17,17,17,.15)",
-        cursor: loading || liked ? "default" : "pointer",
+        cursor: loading ? "default" : "pointer",
         opacity: loading ? 0.7 : 1,
         userSelect: "none",
       }}

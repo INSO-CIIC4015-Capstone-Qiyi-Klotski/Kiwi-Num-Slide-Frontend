@@ -10,10 +10,10 @@ function getCookie(name) {
 
 /**
  * @param {string} path
- * @param {RequestInit & { timeoutMs?: number, csrf?: boolean }} opts
+ * @param {RequestInit & { timeoutMs?: number, csrf?: boolean, noCache?: boolean }} opts
  */
 export async function apiFetch(path, opts = {}) {
-  const { timeoutMs = 12000, headers, csrf = true, ...rest } = opts;
+  const { timeoutMs = 12000, headers, csrf = true, noCache = false, ...rest } = opts;
 
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), timeoutMs);
@@ -33,6 +33,7 @@ export async function apiFetch(path, opts = {}) {
     headers: h,
     signal: controller.signal,
     credentials: "include",
+    ...(noCache ? { cache: "no-store" } : {}),
   });
 
   // Si expira el access, intentamos refresh y reintentamos 1 vez
@@ -44,6 +45,7 @@ export async function apiFetch(path, opts = {}) {
         headers: h,
         signal: controller.signal,
         credentials: "include",
+        ...(noCache ? { cache: "no-store" } : {}),
       });
     }
   }

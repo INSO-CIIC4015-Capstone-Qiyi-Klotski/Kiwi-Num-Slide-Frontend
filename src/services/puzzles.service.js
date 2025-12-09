@@ -98,7 +98,7 @@ export const PuzzlesService = {
       qs.set("minLikes", String(minLikes));
     }
 
-    return apiFetch(`/puzzles?${qs.toString()}`, { method: "GET" });
+    return apiFetch(`/puzzles?${qs.toString()}`, { method: "GET", noCache: true });
   },
 
 };

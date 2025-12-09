@@ -410,7 +410,7 @@ export default function UserProfileClient({
       <main style={pageBg}>
         <div style={wrapper}>
           <div style={card}>
-            <p style={{ fontSize: 14, color: "#4b5563" }}>Loading profile…</p>
+            <p style={{ fontSize: 14, color: "var(--text-secondary)" }}>Loading profile…</p>
           </div>
         </div>
       </main>
@@ -526,7 +526,7 @@ export default function UserProfileClient({
               </div>
 
               {nameError && (
-                <p style={{ ...subtitle, color: "#b91c1c", marginTop: 4 }}>
+                <p style={{ ...subtitle, color: "var(--danger)", marginTop: 4 }}>
                   {nameError}
                 </p>
               )}
@@ -569,10 +569,10 @@ export default function UserProfileClient({
                   )}
 
                   {verifyMessage && (
-                    <p style={{ ...ownerInfoText, color: "#15803d" }}>{verifyMessage}</p>
+                    <p style={{ ...ownerInfoText, color: "var(--accent)" }}>{verifyMessage}</p>
                   )}
                   {verifyError && (
-                    <p style={{ ...ownerInfoText, color: "#b91c1c" }}>{verifyError}</p>
+                    <p style={{ ...ownerInfoText, color: "var(--danger)" }}>{verifyError}</p>
                   )}
                 </div>
               )}
@@ -803,11 +803,11 @@ function ProfileStat({ label, value, asLink = false }) {
   );
 }
 
-/* estilos inline igual que antes... */
 const pageBg = {
   minHeight: "calc(100vh - 56px)",
-  background: "#fdf5ff",
+  background: "var(--bg-primary)",
   padding: "32px 16px",
+  color: "var(--text-primary)",
 };
 
 const wrapper = {
@@ -816,11 +816,11 @@ const wrapper = {
 };
 
 const card = {
-  background: "#ffffff",
+  background: "var(--bg-secondary)",
   borderRadius: 18,
   padding: 24,
-  boxShadow: "0 18px 45px rgba(15, 23, 42, 0.09)",
-  border: "1px solid #f1e4ff",
+  boxShadow: `0 18px 45px var(--shadow)`,
+  border: "1px solid var(--border-color)",
 };
 
 const title = {
@@ -828,12 +828,13 @@ const title = {
   fontWeight: 900,
   margin: 0,
   marginBottom: 6,
+  color: "var(--text-primary)",
 };
 
 const subtitle = {
   margin: 0,
   marginBottom: 12,
-  color: "#4b5563",
+  color: "var(--text-secondary)",
   fontSize: 14,
 };
 
@@ -854,11 +855,11 @@ const avatarCircle = {
   width: 72,
   height: 72,
   borderRadius: "50%",
-  background: "linear-gradient(135deg, #f472b6, #8b5cf6)",
+  background: "linear-gradient(135deg, var(--accent), #8b5cf6)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  color: "#fff",
+  color: "var(--text-on-accent)",
   fontWeight: 700,
 };
 
@@ -871,7 +872,7 @@ const ownerInfoRow = {
 
 const ownerInfoText = {
   fontSize: 13,
-  color: "#4b5563",
+  color: "var(--text-secondary)",
 };
 
 const actionsCol = {
@@ -885,19 +886,19 @@ const actionsCol = {
 const ownerBadge = {
   padding: "4px 10px",
   borderRadius: 999,
-  background: "#ecfeff",
-  border: "1px solid #22c1c3",
+  background: "var(--bg-tertiary)",
+  border: "1px solid var(--border-color)",
   fontSize: 12,
   fontWeight: 600,
-  color: "#0369a1",
+  color: "var(--text-secondary)",
 };
 
 const primaryBtn = {
   padding: "8px 14px",
   borderRadius: 999,
   border: "none",
-  background: "#111827",
-  color: "#ffffff",
+  background: "var(--accent)",
+  color: "var(--text-on-accent)",
   fontWeight: 600,
   fontSize: 14,
   cursor: "pointer",
@@ -906,16 +907,16 @@ const primaryBtn = {
 const ghostBtn = {
   padding: "6px 10px",
   borderRadius: 999,
-  border: "1px solid #d1d5db",
-  background: "#fff",
-  color: "#374151",
+  border: "1px solid var(--border-color)",
+  background: "var(--bg-secondary)",
+  color: "var(--text-primary)",
   fontSize: 13,
   cursor: "pointer",
 };
 
 const primaryLink = {
   fontSize: 13,
-  color: "#1d4ed8",
+  color: "var(--accent)",
   textDecoration: "underline",
 };
 
@@ -929,8 +930,8 @@ const statsRow = {
 const statBox = {
   padding: "10px 12px",
   borderRadius: 14,
-  background: "#f9fafb",
-  border: "1px solid #e5e7eb",
+  background: "var(--bg-tertiary)",
+  border: "1px solid var(--border-color)",
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-start",
@@ -939,11 +940,12 @@ const statBox = {
 const statValue = {
   fontSize: 18,
   fontWeight: 800,
+  color: "var(--text-primary)",
 };
 
 const statLabel = {
   fontSize: 12,
-  color: "#6b7280",
+  color: "var(--text-secondary)",
 };
 
 const sectionTitle = {
@@ -951,6 +953,7 @@ const sectionTitle = {
   marginBottom: 10,
   fontSize: 16,
   fontWeight: 700,
+  color: "var(--text-primary)",
 };
 
 const puzzlesGrid = {
@@ -963,10 +966,10 @@ const puzzleCard = {
   display: "block",
   padding: 12,
   borderRadius: 14,
-  border: "1px solid #e5e7eb",
-  background: "#f9fafb",
+  border: "1px solid var(--border-color)",
+  background: "var(--bg-tertiary)",
   textDecoration: "none",
-  color: "#111827",
+  color: "var(--text-primary)",
 };
 
 const puzzleTitleRow = {
@@ -986,7 +989,7 @@ const puzzleTitle = {
 
 const puzzleMeta = {
   fontSize: 12,
-  color: "#6b7280",
+  color: "var(--text-secondary)",
   margin: 0,
 };
 
@@ -999,15 +1002,15 @@ const seeAllWrapper = {
 const seeAllButton = {
   padding: "8px 16px",
   borderRadius: 999,
-  border: "1px solid #d1d5db",
-  background: "#ffffff",
+  border: "1px solid var(--border-color)",
+  background: "var(--bg-secondary)",
   fontSize: 13,
   fontWeight: 500,
   textDecoration: "none",
-  color: "#111827",
+  color: "var(--text-primary)",
 };
 
-/* estilos extra para nombre editable */
+/* nombre editable */
 const nameBlock = {
   position: "relative",
   display: "inline-block",
@@ -1030,9 +1033,11 @@ const nameEditRow = {
 const nameInputStyle = {
   padding: "6px 10px",
   borderRadius: 999,
-  border: "1px solid #d1d5db",
+  border: "1px solid var(--border-color)",
   fontSize: 14,
   outline: "none",
+  background: "var(--bg-secondary)",
+  color: "var(--text-primary)",
 };
 
 const nameButtonsRow = {
@@ -1052,32 +1057,32 @@ const ghostBtnSmall = {
   fontSize: 13,
 };
 
-// base para iconos circulares
+// iconos circulares
 const editIconBase = {
   position: "absolute",
-  width: 22,      // antes 28
-  height: 22,     // antes 28
+  width: 22,
+  height: 22,
   borderRadius: 999,
-  border: "1px solid #e5e7eb",
-  background: "#ffffff",
+  border: "1px solid var(--border-color)",
+  background: "var(--bg-secondary)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  boxShadow: "0 4px 12px rgba(15, 23, 42, 0.18)",
+  boxShadow: "0 4px 12px var(--shadow-md)",
   cursor: "pointer",
-  fontSize: 12,   // un poco más pequeño
+  fontSize: 12,
 };
 
 const avatarEditBtn = {
   ...editIconBase,
-  right: -4,  // antes -6
-  top: -4,    // antes -6
+  right: -4,
+  top: -4,
 };
 
 const nameEditBtn = {
   ...editIconBase,
-  right: -14, // más a la derecha (antes -6)
-  top: -10,   // más arriba (antes -6)
+  right: -14,
+  top: -10,
 };
 
 const avatarSection = {
@@ -1085,8 +1090,8 @@ const avatarSection = {
   marginBottom: 16,
   padding: 12,
   borderRadius: 14,
-  background: "#f9fafb",
-  border: "1px solid #e5e7eb",
+  background: "var(--bg-tertiary)",
+  border: "1px solid var(--border-color)",
 };
 
 const avatarPickerHeader = {
@@ -1103,6 +1108,7 @@ const closeBtn = {
   lineHeight: 1,
   cursor: "pointer",
   padding: 4,
+  color: "var(--text-primary)",
 };
 
 const avatarGrid = {
@@ -1114,9 +1120,9 @@ const avatarGrid = {
 
 const avatarOption = {
   borderRadius: 12,
-  border: "1px solid #e5e7eb",
+  border: "1px solid var(--border-color)",
   padding: 4,
-  background: "#ffffff",
+  background: "var(--bg-secondary)",
   cursor: "pointer",
   display: "flex",
   alignItems: "center",
@@ -1124,8 +1130,8 @@ const avatarOption = {
 };
 
 const avatarOptionSelected = {
-  borderColor: "#8b5cf6",
-  boxShadow: "0 0 0 2px rgba(139, 92, 246, 0.3)",
+  borderColor: "var(--accent)",
+  boxShadow: "0 0 0 2px rgba(236, 72, 153, 0.35)",
 };
 
 const avatarThumb = {
@@ -1150,20 +1156,20 @@ const unverifiedBadge = {
   marginLeft: 8,
   padding: "2px 8px",
   borderRadius: 999,
-  background: "#fef2f2",
-  color: "#b91c1c",
+  background: "var(--danger-bg)",
+  color: "var(--danger)",
   fontSize: 11,
   fontWeight: 600,
-  border: "1px solid #fecaca",
+  border: "1px solid var(--danger)",
 };
 
 const verifyBtn = {
   marginTop: 4,
   padding: "6px 12px",
   borderRadius: 999,
-  border: "1px solid #111827",
-  background: "#111827",
-  color: "#ffffff",
+  border: "1px solid var(--accent)",
+  background: "var(--accent)",
+  color: "var(--text-on-accent)",
   fontSize: 13,
   fontWeight: 500,
   cursor: "pointer",

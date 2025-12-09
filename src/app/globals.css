@@ -249,3 +249,13 @@ html.dark {
     white-space: nowrap;
     border-width: 0;
   }
+
+  input[type="date"] {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+html.dark input[type="date"] {
+  color-scheme: dark;
+}

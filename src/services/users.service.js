@@ -61,6 +61,7 @@ export const UsersService = {
 
     return apiFetch(url, {
       method: "GET",
+      noCache: true, // Always fetch fresh likes data
     });
   },
 
@@ -89,7 +90,7 @@ export const UsersService = {
         queryString ? `?${queryString}` : ""
       }`;
 
-      const res = await apiFetch(url, { method: "GET" });
+      const res = await apiFetch(url, { method: "GET", noCache: true });
       const payload = res?.data ?? res;
       const items = Array.isArray(payload?.items) ? payload.items : [];
 

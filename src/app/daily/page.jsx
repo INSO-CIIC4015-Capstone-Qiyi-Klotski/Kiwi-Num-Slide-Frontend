@@ -91,7 +91,9 @@ async function getDailyMeta() {
   };
 }
 
-export default async function DailyPuzzlePage() {
+export default async function DailyPuzzlePage({ searchParams }) {
+  const backHref = searchParams?.backTo || "/";
+  
   let dailyMeta = null;
 
   try {
@@ -105,6 +107,7 @@ export default async function DailyPuzzlePage() {
       <PageLayout
         title="Daily Puzzle"
         subtitle="No daily puzzle is available right now. Please check back later."
+        backHref={backHref}
       >
         <p>
           We couldn&apos;t load today&apos;s puzzle. Try again in a few minutes
@@ -117,7 +120,8 @@ export default async function DailyPuzzlePage() {
   return (
     <PageLayout
       title="Daily Puzzle"
-      subtitle="Play today’s featured level and try to beat your best time."
+      subtitle="Play today's featured level and try to beat your best time."
+      backHref={backHref}
     >
       <div
         style={{

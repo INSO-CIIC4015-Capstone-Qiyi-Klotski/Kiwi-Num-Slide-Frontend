@@ -322,7 +322,7 @@ export default function SummaryStep({
 
         {createdLevelId && (
           <Link
-            href={`/levels/${createdLevelId}`}
+            href={`/levels/${createdLevelId}?backTo=/levels/create`}
             style={{
               padding: "8px 18px",
               borderRadius: 999,

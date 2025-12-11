@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   loadSettings,
   saveSettings,
@@ -13,6 +14,9 @@ import PageLayout from "@/components/layout/PageLayout";
 import styles from "./page.module.css";
 
 export default function SettingsPage() {
+  const searchParams = useSearchParams();
+  const backHref = searchParams.get("backTo") || "/";
+  
   // Settings state
   const [darkMode, setDarkMode] = useState(false);
   const [keyBindings, setKeyBindings] = useState(DEFAULT_KEY_BINDINGS);
@@ -87,7 +91,7 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <PageLayout title="Settings" backHref="/">
+      <PageLayout title="Settings" backHref={backHref}>
         <div className={styles.loading}>Loading...</div>
       </PageLayout>
     );
@@ -96,7 +100,7 @@ export default function SettingsPage() {
   return (
     <PageLayout 
       title="Settings" 
-      backHref="/"
+      backHref={backHref}
       titleFontSize="clamp(36px, 6vw, 72px)"
       titleFontSizeTablet="clamp(32px, 5vw, 56px)"
       titleFontSizeMobile="clamp(32px, 8vw, 48px)"

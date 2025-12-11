@@ -70,12 +70,17 @@ const avatarImgStyle = {
   objectFit: "cover",
 };
 
-export default function LevelCard({ level }) {
+export default function LevelCard({ level, backTo }) {
   if (!level) return null;
 
   // Extracting basic level fields
   const id = level.id ?? level.slug;
   const title = level.title ?? `Puzzle #${id}`;
+  
+  // Build the level link with optional backTo param
+  const levelHref = backTo 
+    ? `/levels/${id}?backTo=${encodeURIComponent(backTo)}`
+    : `/levels/${id}`;
 
   // Author block
   const authorObj = level.author;
@@ -109,7 +114,7 @@ export default function LevelCard({ level }) {
   return (
     <article style={cardStyle}>
       {/* Title and link to level page */}
-      <Link href={`/levels/${id}`} style={titleStyle}>
+      <Link href={levelHref} style={titleStyle}>
         {title}
       </Link>
 
@@ -120,11 +125,11 @@ export default function LevelCard({ level }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <span style={{ fontSize: 12 }}>
+          <span style={{ fontSize: 12, color: "var(--text-primary)" }}>
             by{" "}
             {authorId ? (
               <Link
-                href={`/users/${authorId}`}
+                href={backTo ? `/users/${authorId}?backTo=${encodeURIComponent(backTo)}` : `/users/${authorId}`}
                 style={{ textDecoration: "underline" }}
               >
                 {authorName}
@@ -184,7 +189,7 @@ export default function LevelCard({ level }) {
       </div>
 
       <Link
-        href={`/levels/${id}`}
+        href={levelHref}
         style={{
           fontSize: 13,
           padding: "6px 10px",

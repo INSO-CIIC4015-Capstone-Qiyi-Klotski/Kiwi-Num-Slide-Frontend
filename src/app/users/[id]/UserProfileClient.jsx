@@ -7,11 +7,14 @@ import { AuthService } from "@/services/auth.service";
 import { UsersService } from "@/services/users.service";
 import { useRouter } from "next/navigation";
 import { emitAuthChange } from "@/lib/auth-events";
+import BackButton from "@/components/BackButton";
+import PageWrapper from "@/components/PageWrapper";
 
 export default function UserProfileClient({
   userId: rawId,
   initialUser = null,
   initialPuzzles = [],
+  backHref = "/users/browse",
 }) {
   const userId =
     typeof rawId === "string" && /^\d+$/.test(rawId) ? Number(rawId) : null;
@@ -407,19 +410,21 @@ export default function UserProfileClient({
 
   if (loading) {
     return (
-      <main style={pageBg}>
+      <PageWrapper>
+        <BackButton href={backHref} />
         <div style={wrapper}>
           <div style={card}>
             <p style={{ fontSize: 14, color: "var(--text-secondary)" }}>Loading profile…</p>
           </div>
         </div>
-      </main>
+      </PageWrapper>
     );
   }
 
   if (error || !user) {
     return (
-      <main style={pageBg}>
+      <PageWrapper>
+        <BackButton href={backHref} />
         <div style={wrapper}>
           <div style={card}>
             <h1 style={title}>User not found</h1>
@@ -429,14 +434,15 @@ export default function UserProfileClient({
             </Link>
           </div>
         </div>
-      </main>
+      </PageWrapper>
     );
   }
 
   const createdAt = user.created_at ? new Date(user.created_at) : null;
 
   return (
-    <main style={pageBg}>
+    <PageWrapper>
+      <BackButton href={backHref} />
       <div style={wrapper}>
         <div style={card}>
           {/* Header */}
@@ -723,7 +729,7 @@ export default function UserProfileClient({
               value={user.stats?.likes_received ?? 0}
             />
             <Link
-              href={`/users/browse?followersOf=${user.id}`}
+              href={`/users/browse?followersOf=${user.id}&backTo=/users/${user.id}`}
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <ProfileStat
@@ -733,7 +739,7 @@ export default function UserProfileClient({
               />
             </Link>
             <Link
-              href={`/users/browse?followingOf=${user.id}`}
+              href={`/users/browse?followingOf=${user.id}&backTo=/users/${user.id}`}
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <ProfileStat label="Following" value={user.stats?.following ?? 0} asLink />
@@ -754,7 +760,7 @@ export default function UserProfileClient({
                 {puzzles.map((puzzle) => (
                   <Link
                     key={puzzle.id}
-                    href={`/levels/${puzzle.id}`}
+                    href={`/levels/${puzzle.id}?backTo=/users/${user.id}`}
                     style={puzzleCard}
                   >
                     <div style={puzzleTitleRow}>
@@ -774,7 +780,7 @@ export default function UserProfileClient({
             {/* Botón "ver todos" centrado */}
             <div style={seeAllWrapper}>
               <Link
-                href={`/levels/browse?authorId=${user.id}`}
+                href={`/levels/browse?authorId=${user.id}&backTo=/users/${user.id}`}
                 style={seeAllButton}
               >
                 See all created levels →
@@ -783,7 +789,7 @@ export default function UserProfileClient({
           </section>
         </div>
       </div>
-    </main>
+    </PageWrapper>
   );
 }
 

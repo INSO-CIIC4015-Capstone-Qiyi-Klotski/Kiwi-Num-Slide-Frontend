@@ -24,7 +24,7 @@ const skeletonCard = {
   animation: "pulse 1.5s ease-in-out infinite",
 };
 
-export default function LevelsList() {
+export default function LevelsList({ backTo }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -393,6 +393,7 @@ export default function LevelsList() {
             <LevelCard
               key={puzzleKey ?? Math.random()}
               level={{ ...lvl, liked }}
+              backTo={backTo}
             />
           );
         })}

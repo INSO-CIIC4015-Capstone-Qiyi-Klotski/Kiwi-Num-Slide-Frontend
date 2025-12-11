@@ -63,7 +63,7 @@ const chip = {
   fontSize: 11,
 };
 
-export default function UserCard({ user }) {
+export default function UserCard({ user, backTo }) {
   if (!user) return null;
 
   const id = user.id;
@@ -75,6 +75,11 @@ export default function UserCard({ user }) {
   const created = counts.created ?? counts.puzzles ?? null;
   const solved = counts.solved ?? null;
   const followers = counts.followers ?? null;
+
+  // Build the profile link with optional backTo param
+  const profileHref = backTo 
+    ? `/users/${id}?backTo=${encodeURIComponent(backTo)}`
+    : `/users/${id}`;
 
   return (
     <article style={cardStyle}>
@@ -88,7 +93,7 @@ export default function UserCard({ user }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Link href={`/users/${id}`} style={nameStyle}>
+          <Link href={profileHref} style={nameStyle}>
             {name}
           </Link>
 
@@ -103,7 +108,7 @@ export default function UserCard({ user }) {
       </div>
 
       <Link
-        href={`/users/${id}`}
+        href={profileHref}
         style={{
           fontSize: 13,
           padding: "6px 10px",

@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import styles from "./Hud.module.css";
 import { AuthService } from "@/services/auth.service";
 import { UsersService } from "@/services/users.service";
 import { onAuthChange } from "@/lib/auth-events";
 
 export default function Hud() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const [profileUser, setProfileUser] = useState(null); // datos para avatar
@@ -103,9 +106,14 @@ export default function Hud() {
   const initial =
     profileUser?.display_name?.charAt(0)?.toUpperCase() || "?";
 
+  // Build settings link with current full URL (path + query params) as backTo
+  const currentParams = searchParams.toString();
+  const fullPath = currentParams ? `${pathname}?${currentParams}` : pathname;
+  const settingsHref = `/settings?backTo=${encodeURIComponent(fullPath)}`;
+
   return (
     <div className={styles.hud}>
-      <Link href="/settings" className={styles.iconBtn} aria-label="settings" title="Settings">
+      <Link href={settingsHref} className={styles.iconBtn} aria-label="settings" title="Settings">
         ⚙️
       </Link>
 

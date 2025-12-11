@@ -71,9 +71,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function LevelPage({ params }) {
+export default async function LevelPage({ params, searchParams }) {
   const { id: rawId } = await params;
   const id = typeof rawId === "string" ? rawId : "";
+  // Allow dynamic back navigation based on where the user came from
+  const backHref = searchParams?.backTo || "/levels/browse";
 
   if (!id || !/^\d+$/.test(id)) {
     return (
@@ -105,7 +107,7 @@ export default async function LevelPage({ params }) {
     <PageLayout
       title={puzzle.title}
       subtitle={subtitleParts.join(" • ")}
-      backHref="/levels/browse"
+      backHref={backHref}
       titleFontSize="clamp(28px, 5vw, 64px)"
       titleFontSizeTablet="clamp(24px, 5vw, 48px)"
       titleFontSizeMobile="clamp(28px, 7vw, 40px)"

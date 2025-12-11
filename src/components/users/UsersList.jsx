@@ -22,7 +22,7 @@ const skeletonCard = {
   animation: "pulse 1.5s ease-in-out infinite",
 };
 
-export default function UsersList() {
+export default function UsersList({ backTo }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -311,7 +311,7 @@ export default function UsersList() {
 
       <div style={gridStyle}>
         {safeUsers.map((user) => (
-          <UserCard key={user.id} user={user} />
+          <UserCard key={user.id} user={user} backTo={backTo} />
         ))}
       </div>
 

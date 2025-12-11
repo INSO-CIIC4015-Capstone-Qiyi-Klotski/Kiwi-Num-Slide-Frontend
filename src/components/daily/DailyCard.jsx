@@ -168,7 +168,7 @@ export default function DailyCard({
             <span>by </span>
             {authorId ? (
               <Link
-                href={`/users/${authorId}`}
+                href={`/users/${authorId}?backTo=/daily`}
                 style={{ textDecoration: "underline" }}
               >
                 {displayName}
@@ -201,11 +201,11 @@ export default function DailyCard({
 
       {/* CTA principal + link a explorar más levels */}
       <div style={playButtonRow}>
-        <Link href={ctaHref ?? `/levels/${id}`} style={playButtonStyle}>
+        <Link href={ctaHref ? `${ctaHref}?backTo=/daily` : `/levels/${id}?backTo=/daily`} style={playButtonStyle}>
           Play now →
         </Link>
         <Link
-          href="/levels/browse?sort=likes_desc"
+          href="/levels/browse?sort=likes_desc&backTo=/daily"
           style={secondaryLinkStyle}
         >
           Browse more popular levels →

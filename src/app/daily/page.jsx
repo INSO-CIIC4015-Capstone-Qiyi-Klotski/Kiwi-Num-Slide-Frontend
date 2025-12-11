@@ -4,7 +4,7 @@ import PageLayout from "@/components/layout/PageLayout";
 import DailyCard from "@/components/daily/DailyCard";
 import DailyDateSearchCard from "@/components/daily/DailyDateSearchCard";
 
-export const revalidate = 86400; // 24h
+// export const revalidate = 86400; // 24h
 
 function normalizeOperatorsFromBoardSpec(boardSpec) {
   const raw = boardSpec?.operators;
@@ -36,10 +36,11 @@ async function getDailyMeta() {
   // 1) Daily de hoy (trae date + meta básica + author)
   const resDaily = await fetch(`${API_URL}/puzzles/daily-puzzle`, {
     method: "GET",
-    next: {
-      revalidate: 86400,
-      tags: ["daily"],
-    },
+    // next: {
+    //   revalidate: 86400,
+    //   tags: ["daily"],
+    // },
+    cache: "no-store", 
   });
 
   if (!resDaily.ok) {
@@ -60,10 +61,11 @@ async function getDailyMeta() {
   // 2) Detalles completos para sacar operadores, likes, solves, author enriquecido
   const resPuzzle = await fetch(`${API_URL}/puzzles/${id}`, {
     method: "GET",
-    next: {
-      revalidate: 86400,
-      tags: ["daily"],
-    },
+    // next: {
+    //   revalidate: 86400,
+    //   tags: ["daily"],
+    // },
+    cache: "no-store",
   });
 
   if (!resPuzzle.ok) {
@@ -91,7 +93,9 @@ async function getDailyMeta() {
   };
 }
 
-export default async function DailyPuzzlePage() {
+export default async function DailyPuzzlePage({ searchParams }) {
+  const backHref = searchParams?.backTo || "/";
+  
   let dailyMeta = null;
 
   try {
@@ -105,6 +109,7 @@ export default async function DailyPuzzlePage() {
       <PageLayout
         title="Daily Puzzle"
         subtitle="No daily puzzle is available right now. Please check back later."
+        backHref={backHref}
       >
         <p>
           We couldn&apos;t load today&apos;s puzzle. Try again in a few minutes
@@ -117,7 +122,8 @@ export default async function DailyPuzzlePage() {
   return (
     <PageLayout
       title="Daily Puzzle"
-      subtitle="Play today’s featured level and try to beat your best time."
+      subtitle="Play today's featured level and try to beat your best time."
+      backHref={backHref}
     >
       <div
         style={{

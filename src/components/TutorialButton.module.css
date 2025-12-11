@@ -1,0 +1,282 @@
+/* src/components/TutorialButton.module.css */
+
+/* Tutorial Button - similar to BackButton but bottom-left */
+.tutorialButton {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  border: 3px solid var(--text-primary);
+  border-radius: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 4px 0 var(--text-primary);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.tutorialButton:hover {
+  transform: translateY(1px);
+  box-shadow: 0 3px 0 var(--text-primary);
+}
+
+.tutorialButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--text-primary);
+}
+
+.tutorialButton svg {
+  flex-shrink: 0;
+}
+
+/* Responsive adjustments for button */
+@media (max-width: 768px) {
+  .tutorialButton {
+    bottom: 12px;
+    left: 12px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .tutorialButton svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tutorialButton {
+    bottom: 10px;
+    left: 10px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  
+  .tutorialButton svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Modal Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Container */
+.modal {
+  background: var(--bg-secondary);
+  border-radius: 20px;
+  border: 3px solid var(--text-primary);
+  box-shadow: 0 8px 0 var(--text-primary), 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 560px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close Button */
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.closeButton:hover {
+  background: var(--bg-primary);
+  transform: scale(1.05);
+}
+
+/* Modal Title */
+.modalTitle {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0;
+  padding: 24px 24px 16px;
+  text-align: center;
+}
+
+/* Content Area */
+.content {
+  padding: 0 24px;
+}
+
+/* Instructions */
+.instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.stepNumber {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.stepContent {
+  flex: 1;
+}
+
+.stepContent h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stepContent p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.stepContent code {
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.stepContent ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.stepContent li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Got It Button */
+.gotItButton {
+  display: block;
+  width: calc(100% - 48px);
+  margin: 24px auto;
+  padding: 14px 24px;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.gotItButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.gotItButton:active {
+  transform: translateY(1px);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modal {
+    max-height: 90vh;
+    border-radius: 16px;
+  }
+
+  .modalTitle {
+    font-size: 24px;
+    padding: 20px 20px 12px;
+  }
+
+  .content {
+    padding: 0 16px;
+  }
+
+  .step {
+    gap: 10px;
+  }
+
+  .stepNumber {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .stepContent h3 {
+    font-size: 15px;
+  }
+
+  .stepContent p,
+  .stepContent li {
+    font-size: 13px;
+  }
+
+  .gotItButton {
+    width: calc(100% - 32px);
+    margin: 20px auto;
+    padding: 12px 20px;
+  }
+}

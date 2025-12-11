@@ -74,9 +74,11 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function UserProfilePage({ params }) {
+export default async function UserProfilePage({ params, searchParams }) {
   const { id: rawId } = await params;
   const id = typeof rawId === "string" ? rawId : "";
+  // Allow dynamic back navigation based on where the user came from
+  const backHref = searchParams?.backTo || "/users/browse";
 
   if (!id || !/^\d+$/.test(id)) {
     return (
@@ -97,6 +99,7 @@ export default async function UserProfilePage({ params }) {
       userId={id}
       initialUser={initialUser}
       initialPuzzles={initialPuzzles}
+      backHref={backHref}
     />
   );
 }

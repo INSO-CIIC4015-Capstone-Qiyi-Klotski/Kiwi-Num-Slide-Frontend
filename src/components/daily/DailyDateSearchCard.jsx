@@ -106,9 +106,10 @@ export default function DailyDateSearchCard() {
     }
   }
 
-  const queryHref = result?.title
-    ? `/levels/browse?q=${encodeURIComponent(result.title)}`
-    : null;
+  const queryHref =
+    result?.title
+      ? `/levels/browse?q=${encodeURIComponent(result.title)}&backTo=/daily`
+      : null;
 
   return (
     <aside style={cardStyle}>

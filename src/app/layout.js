@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Bungee } from "next/font/google";
 import "./globals.css";
 import Hud from "../components/Hud";
@@ -33,7 +34,9 @@ export default function RootLayout({ children }) {
       >
         <DarkModeInit />
         <header className="site-header">
-          <Hud />
+          <Suspense fallback={null}>
+            <Hud />
+          </Suspense>
         </header>
         
         <main className="site-main" role="main" aria-label="Contenido principal">

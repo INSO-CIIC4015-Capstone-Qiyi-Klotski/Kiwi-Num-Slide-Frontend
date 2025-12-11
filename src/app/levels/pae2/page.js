@@ -3,11 +3,13 @@ import MenuPageLayout from '@/components/layout/MenuPageLayout';
 
 export const metadata = { title: 'Levels • Kiwi Num Slide' };
 
-export default function LevelsMenuPae2() {
+export default async function LevelsMenuPae2({ searchParams }) {
+  const backHref = searchParams?.backTo || "/";
+  
   return (
     <MenuPageLayout 
       title="Levels" 
-      backHref="/" 
+      backHref={backHref}
       buttonWidth="clamp(350px, 30vw, 500px)"
       buttonWidthTablet="clamp(300px, 28vw, 450px)"
       buttonWidthMobile="clamp(250px, 25vw, 300px)"

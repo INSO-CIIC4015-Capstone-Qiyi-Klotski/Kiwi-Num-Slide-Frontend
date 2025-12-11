@@ -5,11 +5,14 @@ import UsersBrowsePageClient from "@/components/users/UsersBrowsePageClient";
 
 export const metadata = { title: "Browse Users • Kiwi Num Slide" };
 
-export default function UsersBrowsePage() {
+export default async function UsersBrowsePage({ searchParams }) {
+  // Allow dynamic back navigation based on where the user came from
+  const backHref = searchParams?.backTo || "/";
+  
   return (
     <PageLayout
       title="Browse Users"
-      backHref="/"
+      backHref={backHref}
       titleFontSize="clamp(32px, 8vw, 120px)"
       titleFontSizeTablet="clamp(28px, 8vw, 60px)"
       titleFontSizeMobile="clamp(40px, 10vw, 80px)"

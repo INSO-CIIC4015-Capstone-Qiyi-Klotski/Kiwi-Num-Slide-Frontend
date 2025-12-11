@@ -1,9 +1,11 @@
 import PageWrapper from "@/components/PageWrapper";
+import TutorialButton from "@/components/TutorialButton";
 import appStyles from "../../app/page.module.css";
 
 export default function HomePageLayout({ children }) {
   return (
     <PageWrapper>
+      <TutorialButton />
       <div className={appStyles.contentContainer} style={{ 
         '--button-width': 'clamp(280px, 25vw, 400px)',
         '--button-width-tablet': 'clamp(250px, 22vw, 350px)',

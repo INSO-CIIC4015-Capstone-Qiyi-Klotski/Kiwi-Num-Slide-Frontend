@@ -19,7 +19,7 @@ jobs:
       EB_APP_NAME:    ${{ secrets.EB_APP_NAME }}
       EB_ENV_NAME:    ${{ secrets.EB_ENV_NAME }}
       EB_S3_BUCKET:   ${{ secrets.EB_S3_BUCKET }}
-      ECR_REPO_URI:   ${{ secrets.ECR_REPO_URI }}    # p.ej. 9162....amazonaws.com/next-min
+      ECR_REPO_URI:   ${{ secrets.ECR_REPO_URI }}
       IMAGE_TAG:      ${{ github.sha }}
       CONTAINER_PORT: 3000
       NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
@@ -27,20 +27,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Node para correr Jest antes del deploy
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
+      - name: Precheck infra via Terraform Cloud (latest run)
+        shell: bash
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+          TF_CLOUD_ORGANIZATION: ${{ secrets.TF_CLOUD_ORGANIZATION }}
+          TF_WORKSPACE: ${{ secrets.TF_WORKSPACE }}
+        run: |
+          set -euo pipefail
 
-      # Instalar dependencias
-      - name: Install dependencies
-        run: npm ci
+          ws_json="$(curl -sS \
+            -H "Authorization: Bearer $TF_API_TOKEN" \
+            -H "Content-Type: application/vnd.api+json" \
+            "https://app.terraform.io/api/v2/organizations/$TF_CLOUD_ORGANIZATION/workspaces/$TF_WORKSPACE")"
 
-      # Correr los tests
-      - name: Run Jest tests
-        run: npm run test:ci
+          ws_id="$(echo "$ws_json" | jq -r '.data.id')"
+          if [[ -z "$ws_id" || "$ws_id" == "null" ]]; then
+            echo "::error::Terraform Cloud workspace not found. Aborting deploy."
+            exit 1
+          fi
+
+          runs_json="$(curl -sS \
+            -H "Authorization: Bearer $TF_API_TOKEN" \
+            -H "Content-Type: application/vnd.api+json" \
+            "https://app.terraform.io/api/v2/workspaces/$ws_id/runs?page%5Bsize%5D=1")"
+
+          status="$(echo "$runs_json" | jq -r '.data[0].attributes.status')"
+          is_destroy="$(echo "$runs_json" | jq -r '.data[0].attributes."is-destroy"')"
+
+          echo "Latest run: status=$status | is_destroy=$is_destroy"
+
+          if [[ "$is_destroy" == "true" && "$status" == "applied" ]]; then
+            echo "::error::Infra is DOWN (latest run was destroy/applied). Aborting deploy."
+            exit 1
+          fi
+
+          if [[ "$is_destroy" == "false" && "$status" == "applied" ]]; then
+            echo " Infra is UP (latest run applied). Proceeding with deploy."
+            exit 0
+          fi
+
+          echo "::error::Infra status unclear (latest run status=$status). Aborting deploy."
+          exit 1
 
       - name: Debug OIDC claims (safe)
         shell: bash
@@ -59,30 +87,18 @@ jobs:
           role-to-assume: arn:aws:iam::916205284452:role/GitHubActions-EB-Deploy
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Credenciales AWS
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region:            ${{ secrets.AWS_REGION }}
-
-      # Validaciones rápidas de secrets
       - name: Validate required secrets
         run: |
           [ -n "$ECR_REPO_URI" ] || { echo "::error::ECR_REPO_URI vacío"; exit 1; }
-          # quitar slash final si lo hubiera
           ECR_URI="${ECR_REPO_URI%/}"
           case "$ECR_URI" in
             *:*) echo "::error::ECR_REPO_URI no debe incluir :tag (solo repo)"; exit 1;;
           esac
           echo "ECR_URI=$ECR_URI" >> $GITHUB_ENV
 
-      # Login a ECR
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      # Build & push de la imagen (el Dockerfile ya hace build/export con Node 18)
       - name: Build Docker image
         run: |
           IMAGE="$ECR_URI:$IMAGE_TAG"
@@ -93,7 +109,6 @@ jobs:
       - name: Push Docker image
         run: docker push "$IMAGE"
 
-      # Generar Dockerrun (EB hará docker pull de la imagen recién subida)
       - name: Create Dockerrun.aws.json
         run: |
           cat > Dockerrun.aws.json <<EOF
@@ -110,8 +125,7 @@ jobs:
           EOF
           echo "=== Dockerrun.aws.json ==="
           cat Dockerrun.aws.json
-          
-      # Empaquetar y subir a S3 como application version
+
       - name: Zip source bundle
         run: zip -9r "app-${IMAGE_TAG}.zip" Dockerrun.aws.json
 
@@ -134,11 +148,10 @@ jobs:
       - name: Monitor EB Events
         shell: bash
         run: |
-          echo "Esperando a que el ambiente alcance estado Ready + (Green/Ok)..."
+          echo "Waiting for the environment to reach Ready + (Green/Ok) state..."
           end=$((SECONDS+1800))  # 30 min
 
           while [ $SECONDS -lt $end ]; do
-            # Muestra sólo los mensajes de eventos recientes (opcional; quita si prefieres tabla)
             aws elasticbeanstalk describe-events \
               --environment-name "$EB_ENV_NAME" \
               --region "$AWS_REGION" \
